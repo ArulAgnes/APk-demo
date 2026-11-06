@@ -244,6 +244,7 @@ Authentication is local: scrypt password hashing with a per-user random salt; ra
 - No network calls are made by the mathematics engines.
 - No user data is included in this repository. Smoke-test accounts were deleted after earlier validation.
 - The cryptography lab is educational only: textbook RSA is insecure, one-time-pad keys are displayed, and side-channel data is synthetic.
+- **Dependency audit:** local `npm audit` reports 15 advisories (1 critical, 2 high, 12 moderate). The critical item is Next.js 16.2.6; the fixed release is 16.4.5. GitHub's Dependabot summary reports 29 alerts (5 critical, 11 high, 12 moderate, 1 low). Upgrade and rerun the full build/test suite before any deployment.
 
 A final staged-file secret scan must be run before the first push.
 
@@ -280,6 +281,7 @@ curl http://localhost:3000/api/tests
 ## 14. Known limitations
 
 - **Lint gate is red:** 21 errors, 20 warnings. Mostly hook-rule violations in client components; not a runtime blocker.
+- **Dependency advisories are open:** `npm audit` reports 1 critical, 2 high and 12 moderate advisories, including a critical Next.js 16.2.6 item fixed in 16.4.5.
 - No browser E2E suite (Playwright or similar); no accessibility audit.
 - No CI/CD, Dockerfile, deployment manifest or hosted database.
 - Numerical linear algebra uses floating point (approximately `1e-10` tolerance).

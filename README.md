@@ -428,6 +428,7 @@ No screenshots of a deployed app are shown because no deployment exists. All dia
 - **Physical calculator guide** is conceptual and avoids invented key sequences.
 - **framer-motion** is installed but unused; CSS animation is used instead.
 - **Lint** currently reports 21 errors and 20 warnings.
+- **Dependency audit:** `npm audit` reports 1 critical, 2 high and 12 moderate advisories. The critical item is in Next.js 16.2.6; an upgrade to 16.4.5 is available and should be applied and retested before any deployment.
 - **No license file** is included. The source is all rights reserved by default until a license is added.
 
 ---

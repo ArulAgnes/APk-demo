@@ -113,7 +113,28 @@ The README places this disclosure in an `[!IMPORTANT]` callout before the featur
 
 ---
 
-## 6. Changes made for publication
+## 6. Dependency security status
+
+The push triggered GitHub's dependency report:
+
+```text
+GitHub found 29 vulnerabilities on the default branch
+(5 critical, 11 high, 12 moderate, 1 low).
+```
+
+Local `npm audit` reports a smaller unique-advisory set:
+
+```text
+1 critical · 2 high · 12 moderate
+```
+
+The critical advisory is in **Next.js 16.2.6**; the installed fixed release is **Next.js 16.4.5**. The two high advisories flow through `postcss` and `sharp`; the moderate set is mostly development tooling (`drizzle-kit`, `eslint-config-next`, `typescript-eslint` and their transitive packages).
+
+No dependency upgrade was performed during publication because it would change the verified framework version and requires a fresh typecheck, build and 107-test run. This is the highest-priority follow-up before any deployment. The open alerts are disclosed in `README.md` and `PROJECT_AUDIT.md`.
+
+---
+
+## 7. Changes made for publication
 
 - Rewrote `README.md` with the requested cyber-math identity and honest implementation matrix.
 - Added `PROJECT_AUDIT.md`.
@@ -127,19 +148,20 @@ Application logic, solver behavior and database schema were not modified.
 
 ---
 
-## 7. Remaining work
+## 8. Remaining work
 
-1. Fix the 21 lint errors (mostly `react-hooks/set-state-in-effect`).
-2. Add a license file before inviting reuse.
-3. Add CI and Playwright end-to-end tests.
-4. Implement Simplex and gradient descent if the repository name is to become fully accurate.
-5. Provision PostgreSQL, verify `/api/health` and full notebook persistence in a deployed environment.
-6. Add a repository description and topics (the GitHub page currently shows “No description, website, or topics provided”).
-7. Deploy the app if a live URL is required; no deployment is claimed today.
+1. Upgrade Next.js to 16.4.5 (or later) and resolve the Dependabot advisories; re-run typecheck, build and the 107-test suite.
+2. Fix the 21 lint errors (mostly `react-hooks/set-state-in-effect`).
+3. Add a license file before inviting reuse.
+4. Add CI and Playwright end-to-end tests.
+5. Implement Simplex and gradient descent if the repository name is to become fully accurate.
+6. Provision PostgreSQL, verify `/api/health` and full notebook persistence in a deployed environment.
+7. Add a repository description and topics (the GitHub page currently shows “No description, website, or topics provided”).
+8. Deploy the app if a live URL is required; no deployment is claimed today.
 
 ---
 
-## 8. Repository links
+## 9. Repository links
 
 - Repository: https://github.com/ArulAgnes/SVD-Simplex-Gradient-Maths-Calcultor
 - README: https://github.com/ArulAgnes/SVD-Simplex-Gradient-Maths-Calcultor/blob/main/README.md
