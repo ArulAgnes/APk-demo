@@ -1,0 +1,107 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img" aria-labelledby="simplexTitle simplexDesc">
+  <title id="simplexTitle">Simplex method concept — MathSphere AI</title>
+  <desc id="simplexDesc">A two-variable linear programme with a polygonal feasible region, objective contours and an optimal vertex. Labelled as a conceptual roadmap because a simplex solver is not implemented.</desc>
+  <defs>
+    <linearGradient id="simplexBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="0.5" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="simplexRegion" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00D4FF" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#A78BFA" stop-opacity="0.08"/>
+    </linearGradient>
+    <pattern id="simplexGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#94A3B8" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+    <filter id="simplexGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="simplexArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#A3E635"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="540" rx="28" fill="url(#simplexBg)"/>
+  <rect width="1200" height="540" rx="28" fill="url(#simplexGrid)"/>
+  <path d="M 0 1 H 1200" stroke="#A78BFA" stroke-opacity="0.35"/>
+  <circle cx="1120" cy="500" r="160" fill="#A78BFA" fill-opacity="0.05"/>
+
+  <text x="64" y="66" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12" letter-spacing="4">OPTIMIZATION · CONCEPTUAL MODULE</text>
+  <text x="64" y="122" fill="#FFFFFF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="46" font-weight="700">THE SIMPLEX METHOD</text>
+  <text x="64" y="152" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="13">Move between vertices of a feasible polytope until no adjacent vertex improves the objective.</text>
+
+  <g>
+    <rect x="880" y="44" width="256" height="38" rx="19" fill="#FBBF24" fill-opacity="0.08" stroke="#FBBF24" stroke-opacity="0.4"/>
+    <circle cx="902" cy="63" r="5" fill="#FBBF24"/>
+    <text x="917" y="67" fill="#FBBF24" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="1.4">CONCEPTUAL · SOLVER NOT IMPLEMENTED</text>
+  </g>
+
+  <g>
+    <rect x="64" y="184" width="680" height="286" rx="18" fill="#0F172A" fill-opacity="0.78" stroke="#94A3B8" stroke-opacity="0.18"/>
+    <text x="88" y="212" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">FEASIBLE REGION · 2-D PROJECTION</text>
+
+    <line x1="140" y1="430" x2="632" y2="430" stroke="#64748B" stroke-width="1.2"/>
+    <line x1="140" y1="430" x2="140" y2="240" stroke="#64748B" stroke-width="1.2"/>
+    <path d="M 632 430 L 622 425 M 632 430 L 622 435" stroke="#64748B" stroke-width="1.2" fill="none"/>
+    <path d="M 140 240 L 135 250 M 140 240 L 145 250" stroke="#64748B" stroke-width="1.2" fill="none"/>
+    <text x="642" y="435" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">x</text>
+    <text x="126" y="236" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">y</text>
+
+    <path d="M 140 430 L 365 430 L 365 335 L 230 240 L 140 240 Z" fill="url(#simplexRegion)" stroke="#00D4FF" stroke-width="2"/>
+    <path d="M 365 430 L 365 335 L 230 240 L 140 240" fill="none" stroke="#00D4FF" stroke-opacity="0.6" stroke-width="1.2" stroke-dasharray="6 6"/>
+
+    <g stroke="#A78BFA" stroke-opacity="0.28" stroke-width="1" stroke-dasharray="4 5">
+      <line x1="140" y1="335" x2="230" y2="430"/>
+      <line x1="140" y1="240" x2="320" y2="430"/>
+      <line x1="230" y1="240" x2="410" y2="430"/>
+    </g>
+    <text x="236" y="420" fill="#A78BFA" fill-opacity="0.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">z = 6</text>
+    <text x="326" y="420" fill="#A78BFA" fill-opacity="0.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">z = 12</text>
+    <text x="416" y="414" fill="#A78BFA" fill-opacity="0.7" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">z = 18</text>
+
+    <g>
+      <circle cx="140" cy="430" r="4.5" fill="#A3E635"/>
+      <text x="118" y="452" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">A (0, 0)</text>
+      <circle cx="365" cy="430" r="4.5" fill="#A3E635"/>
+      <text x="354" y="452" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">B (5, 0)</text>
+      <circle cx="230" cy="240" r="4.5" fill="#A3E635"/>
+      <text x="224" y="234" text-anchor="end" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">D (2, 6)</text>
+    </g>
+
+    <circle cx="365" cy="335" r="11" fill="none" stroke="#A3E635" stroke-opacity="0.55" filter="url(#simplexGlow)"/>
+    <circle cx="365" cy="335" r="6" fill="#A3E635" filter="url(#simplexGlow)"/>
+    <text x="381" y="323" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11" font-weight="700">OPTIMUM (5, 3)</text>
+    <text x="381" y="339" fill="#A3E635" fill-opacity="0.8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">z = 3x + 2y = 21</text>
+
+    <g>
+      <circle cx="500" cy="250" r="3.5" fill="#00D4FF"/>
+      <circle cx="470" cy="268" r="3.5" fill="#00D4FF" fill-opacity="0.75"/>
+      <circle cx="440" cy="286" r="3.5" fill="#00D4FF" fill-opacity="0.55"/>
+      <path d="M 492 256 Q 470 268 446 282" fill="none" stroke="#00D4FF" stroke-opacity="0.55" stroke-width="1.2" marker-end="url(#simplexArrow)"/>
+      <text x="500" y="236" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">PIVOT PATH</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="776" y="184" width="360" height="286" rx="18" fill="#0F172A" fill-opacity="0.78" stroke="#94A3B8" stroke-opacity="0.18"/>
+    <text x="800" y="212" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">CANONICAL MODEL</text>
+    <text x="800" y="252" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="15">maximise  z = 3x + 2y</text>
+    <text x="800" y="284" fill="#CBD5E1" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">subject to</text>
+    <text x="816" y="310" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">x + y ≤ 8</text>
+    <text x="816" y="332" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">x ≤ 5</text>
+    <text x="816" y="354" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">y ≤ 6</text>
+    <text x="816" y="376" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">x, y ≥ 0</text>
+
+    <line x1="800" y1="398" x2="1112" y2="398" stroke="#94A3B8" stroke-opacity="0.14"/>
+    <text x="800" y="424" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">STANDARD FORM ADDITIONS</text>
+    <text x="800" y="446" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11">slack variables s₁, s₂, s₃ ≥ 0</text>
+  </g>
+
+  <text x="64" y="504" fill="#FBBF24" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11">HONEST STATUS · Explanatory illustration only. MathSphere AI does not yet expose a simplex solver, tableau or pivot engine.</text>
+  <text x="1136" y="524" fill="#475569" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9" text-anchor="end">docs/readme-assets/simplex.svg</text>
+</svg>

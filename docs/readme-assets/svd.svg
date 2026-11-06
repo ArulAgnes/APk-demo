@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img" aria-labelledby="svdTitle svdDesc">
+  <title id="svdTitle">Singular Value Decomposition — MathSphere AI</title>
+  <desc id="svdDesc">A matrix A is factored into U, Sigma and V transpose. A unit circle maps to an ellipse with semi-axes equal to the singular values.</desc>
+  <defs>
+    <linearGradient id="svdBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="0.55" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="svdCyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00D4FF"/>
+      <stop offset="1" stop-color="#38BDF8"/>
+    </linearGradient>
+    <linearGradient id="svdViolet" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="svdLime" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A3E635"/>
+      <stop offset="1" stop-color="#65A30D"/>
+    </linearGradient>
+    <pattern id="svdGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#94A3B8" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+    <filter id="svdGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="svdArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#00D4FF"/>
+    </marker>
+    <marker id="svdArrowViolet" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#A78BFA"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="540" rx="28" fill="url(#svdBg)"/>
+  <rect width="1200" height="540" rx="28" fill="url(#svdGrid)"/>
+  <path d="M 0 1 H 1200" stroke="#00D4FF" stroke-opacity="0.35"/>
+  <circle cx="1140" cy="58" r="120" fill="#00D4FF" fill-opacity="0.05"/>
+  <circle cx="80" cy="500" r="150" fill="#A78BFA" fill-opacity="0.05"/>
+
+  <text x="64" y="66" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12" letter-spacing="4">UNIT II · MATRIX DECOMPOSITION</text>
+  <text x="64" y="124" fill="#FFFFFF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="50" font-weight="700">A = U Σ Vᵀ</text>
+  <text x="64" y="154" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="13">Every m×n matrix, including rank-deficient and rectangular cases, has a singular value decomposition.</text>
+
+  <g>
+    <rect x="918" y="44" width="218" height="38" rx="19" fill="#A3E635" fill-opacity="0.08" stroke="#A3E635" stroke-opacity="0.35"/>
+    <circle cx="940" cy="63" r="5" fill="#A3E635" filter="url(#svdGlow)"/>
+    <text x="955" y="67" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11" letter-spacing="1.5">IMPLEMENTED · LIVE ENGINE</text>
+  </g>
+
+  <g>
+    <rect x="64" y="196" width="142" height="184" rx="16" fill="#0F172A" stroke="#00D4FF" stroke-opacity="0.35"/>
+    <text x="82" y="222" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11" letter-spacing="2">MATRIX A</text>
+    <g fill="#E2E8F0" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="17" text-anchor="middle">
+      <text x="104" y="270">2</text><text x="164" y="270">1</text>
+      <text x="104" y="306">1</text><text x="164" y="306">3</text>
+      <text x="104" y="342">0</text><text x="164" y="342">2</text>
+    </g>
+    <path d="M 88 250 L 88 352" stroke="#00D4FF" stroke-opacity="0.45" stroke-width="1.5"/>
+    <path d="M 186 250 L 186 352" stroke="#00D4FF" stroke-opacity="0.45" stroke-width="1.5"/>
+    <path d="M 82 256 L 88 250 L 94 256" fill="none" stroke="#00D4FF" stroke-opacity="0.45" stroke-width="1.5"/>
+    <path d="M 82 346 L 88 352 L 94 346" fill="none" stroke="#00D4FF" stroke-opacity="0.45" stroke-width="1.5"/>
+    <path d="M 180 256 L 186 250 L 192 256" fill="none" stroke="#00D4FF" stroke-opacity="0.45" stroke-width="1.5"/>
+    <path d="M 180 346 L 186 352 L 192 346" fill="none" stroke="#00D4FF" stroke-opacity="0.45" stroke-width="1.5"/>
+  </g>
+
+  <text x="278" y="300" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="34">=</text>
+
+  <g>
+    <rect x="330" y="196" width="132" height="184" rx="16" fill="#0F172A" stroke="#A78BFA" stroke-opacity="0.4"/>
+    <text x="348" y="222" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11" letter-spacing="2">U · 3×3</text>
+    <g fill="#E2E8F0" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="15" text-anchor="middle">
+      <text x="365" y="268">u₁₁</text><text x="400" y="268">u₁₂</text><text x="435" y="268">u₁₃</text>
+      <text x="365" y="304">u₂₁</text><text x="400" y="304">u₂₂</text><text x="435" y="304">u₂₃</text>
+      <text x="365" y="340">u₃₁</text><text x="400" y="340">u₃₂</text><text x="435" y="340">u₃₃</text>
+    </g>
+    <text x="348" y="366" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">ORTHONORMAL COLUMNS</text>
+  </g>
+
+  <g>
+    <rect x="504" y="196" width="116" height="184" rx="16" fill="#0F172A" stroke="#00D4FF" stroke-opacity="0.4"/>
+    <text x="522" y="222" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11" letter-spacing="2">Σ · 3×2</text>
+    <g fill="#FFFFFF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="16" text-anchor="middle">
+      <text x="548" y="270">σ₁</text><text x="592" y="270">0</text>
+      <text x="548" y="306">0</text><text x="592" y="306">σ₂</text>
+      <text x="548" y="342">0</text><text x="592" y="342">0</text>
+    </g>
+    <text x="522" y="366" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">σ₁ ≥ σ₂ ≥ 0</text>
+  </g>
+
+  <g>
+    <rect x="662" y="196" width="116" height="184" rx="16" fill="#0F172A" stroke="#A3E635" stroke-opacity="0.4"/>
+    <text x="680" y="222" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11" letter-spacing="2">Vᵀ · 2×2</text>
+    <g fill="#E2E8F0" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="16" text-anchor="middle">
+      <text x="704" y="286">v₁₁</text><text x="744" y="286">v₁₂</text>
+      <text x="704" y="322">v₂₁</text><text x="744" y="322">v₂₂</text>
+    </g>
+    <text x="680" y="366" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">ORTHONORMAL ROWS</text>
+  </g>
+
+  <g>
+    <rect x="858" y="196" width="278" height="246" rx="18" fill="#0F172A" fill-opacity="0.72" stroke="#94A3B8" stroke-opacity="0.18"/>
+    <text x="882" y="224" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">GEOMETRY OF THE MAP</text>
+
+    <circle cx="982" cy="278" r="38" fill="none" stroke="#A78BFA" stroke-opacity="0.7" stroke-width="1.5" stroke-dasharray="5 5"/>
+    <line x1="944" y1="278" x2="1020" y2="278" stroke="#A78BFA" stroke-opacity="0.25"/>
+    <line x1="982" y1="240" x2="982" y2="316" stroke="#A78BFA" stroke-opacity="0.25"/>
+    <text x="982" y="332" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9" text-anchor="middle">UNIT CIRCLE</text>
+
+    <line x1="1032" y1="278" x2="1070" y2="278" stroke="#00D4FF" stroke-width="1.5" marker-end="url(#svdArrow)"/>
+    <text x="1051" y="268" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9" text-anchor="middle">A</text>
+
+    <ellipse cx="982" cy="396" rx="92" ry="28" transform="rotate(-16 982 396)" fill="#00D4FF" fill-opacity="0.10" stroke="#00D4FF" stroke-width="1.5"/>
+    <line x1="896" y1="412" x2="1068" y2="380" stroke="#00D4FF" stroke-opacity="0.45" stroke-width="1.2" filter="url(#svdGlow)"/>
+    <text x="982" y="428" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9" text-anchor="middle">σ₁ = 5.0 · σ₂ = 1.4</text>
+  </g>
+
+  <line x1="64" y1="458" x2="1136" y2="458" stroke="#94A3B8" stroke-opacity="0.14"/>
+  <text x="64" y="484" fill="#CBD5E1" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">AᵀA → λ₁ ≥ λ₂ ≥ … → σᵢ = √λᵢ → eigenvectors vᵢ → uᵢ = Avᵢ / σᵢ → Gram–Schmidt completion</text>
+  <text x="64" y="508" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11">Full 14-step derivation · full and thin forms · Moore–Penrose pseudoinverse · Eckart–Young rank-k truncation</text>
+  <text x="1136" y="508" fill="#475569" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9" text-anchor="end">docs/readme-assets/svd.svg</text>
+</svg>

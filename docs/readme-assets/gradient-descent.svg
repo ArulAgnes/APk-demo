@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="540" viewBox="0 0 1200 540" role="img" aria-labelledby="gdTitle gdDesc">
+  <title id="gdTitle">Gradient descent concept — MathSphere AI</title>
+  <desc id="gdDesc">A sequence of iterates descends a quadratic loss surface along the negative gradient toward the minimum. Labelled as a conceptual roadmap because a gradient descent solver is not implemented.</desc>
+  <defs>
+    <linearGradient id="gdBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="0.55" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="gdPath" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#A78BFA"/>
+      <stop offset="1" stop-color="#00D4FF"/>
+    </linearGradient>
+    <radialGradient id="gdCenter" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#A3E635" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#A3E635" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="gdGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#94A3B8" stroke-opacity="0.08" stroke-width="1"/>
+    </pattern>
+    <filter id="gdGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="gdArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#00D4FF"/>
+    </marker>
+    <marker id="gdArrowViolet" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#A78BFA"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="540" rx="28" fill="url(#gdBg)"/>
+  <rect width="1200" height="540" rx="28" fill="url(#gdGrid)"/>
+  <path d="M 0 1 H 1200" stroke="#00D4FF" stroke-opacity="0.35"/>
+  <circle cx="1120" cy="80" r="170" fill="#00D4FF" fill-opacity="0.04"/>
+
+  <text x="64" y="66" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12" letter-spacing="4">OPTIMIZATION · CONCEPTUAL MODULE</text>
+  <text x="64" y="122" fill="#FFFFFF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="46" font-weight="700">GRADIENT DESCENT</text>
+  <text x="64" y="152" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="13">Follow the negative gradient, shrink the step, and converge to a local minimum.</text>
+
+  <g>
+    <rect x="880" y="44" width="256" height="38" rx="19" fill="#FBBF24" fill-opacity="0.08" stroke="#FBBF24" stroke-opacity="0.4"/>
+    <circle cx="902" cy="63" r="5" fill="#FBBF24"/>
+    <text x="917" y="67" fill="#FBBF24" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="1.4">CONCEPTUAL · SOLVER NOT IMPLEMENTED</text>
+  </g>
+
+  <g>
+    <rect x="64" y="184" width="680" height="286" rx="18" fill="#0F172A" fill-opacity="0.78" stroke="#94A3B8" stroke-opacity="0.18"/>
+    <text x="88" y="212" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">LOSS LANDSCAPE · CONTOURS OF f(x₁, x₂)</text>
+
+    <g transform="translate(560 330) rotate(-18)">
+      <ellipse rx="180" ry="95" fill="none" stroke="#00D4FF" stroke-opacity="0.10" stroke-width="1.2"/>
+      <ellipse rx="152" ry="80" fill="none" stroke="#00D4FF" stroke-opacity="0.14" stroke-width="1.2"/>
+      <ellipse rx="124" ry="65" fill="none" stroke="#00D4FF" stroke-opacity="0.18" stroke-width="1.2"/>
+      <ellipse rx="96" ry="50" fill="none" stroke="#00D4FF" stroke-opacity="0.24" stroke-width="1.2"/>
+      <ellipse rx="68" ry="35" fill="none" stroke="#00D4FF" stroke-opacity="0.32" stroke-width="1.2"/>
+      <ellipse rx="40" ry="20" fill="none" stroke="#00D4FF" stroke-opacity="0.42" stroke-width="1.2"/>
+      <ellipse rx="14" ry="7" fill="none" stroke="#A3E635" stroke-opacity="0.55" stroke-width="1.2"/>
+    </g>
+    <circle cx="560" cy="330" r="44" fill="url(#gdCenter)"/>
+    <circle cx="560" cy="330" r="5" fill="#A3E635" filter="url(#gdGlow)"/>
+    <text x="578" y="324" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" font-weight="700">x* MINIMUM</text>
+    <text x="578" y="340" fill="#A3E635" fill-opacity="0.75" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">∇f(x*) = 0</text>
+
+    <g>
+      <path d="M 200 430 L 280 406 L 340 386 L 390 368 L 430 354 L 470 344 L 505 338 L 535 334 L 560 330" fill="none" stroke="url(#gdPath)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="200" cy="430" r="6.5" fill="#A78BFA" filter="url(#gdGlow)"/>
+      <text x="168" y="450" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">x₀</text>
+      <circle cx="280" cy="406" r="4" fill="#A78BFA" fill-opacity="0.9"/>
+      <circle cx="340" cy="386" r="4" fill="#A78BFA" fill-opacity="0.8"/>
+      <circle cx="390" cy="368" r="4" fill="#A78BFA" fill-opacity="0.7"/>
+      <circle cx="430" cy="354" r="4" fill="#A78BFA" fill-opacity="0.7"/>
+      <circle cx="470" cy="344" r="4" fill="#A78BFA" fill-opacity="0.6"/>
+      <circle cx="505" cy="338" r="4" fill="#A78BFA" fill-opacity="0.5"/>
+      <circle cx="535" cy="334" r="4" fill="#A78BFA" fill-opacity="0.5"/>
+      <text x="280" y="394" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">x₁</text>
+      <text x="470" y="332" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">xₖ</text>
+    </g>
+
+    <g>
+      <line x1="430" y1="354" x2="396" y2="318" stroke="#00D4FF" stroke-width="1.4" marker-end="url(#gdArrow)"/>
+      <text x="388" y="308" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9" text-anchor="end">−η∇f(xₖ)</text>
+    </g>
+  </g>
+
+  <g>
+    <rect x="776" y="184" width="360" height="286" rx="18" fill="#0F172A" fill-opacity="0.78" stroke="#94A3B8" stroke-opacity="0.18"/>
+    <text x="800" y="212" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">UPDATE RULE</text>
+    <text x="800" y="256" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="17">xₖ₊₁ = xₖ − η∇f(xₖ)</text>
+    <text x="800" y="288" fill="#CBD5E1" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">η  learning rate · 0 &lt; η ≤ 1/L</text>
+    <text x="800" y="310" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11">L  Lipschitz constant of ∇f</text>
+
+    <line x1="800" y1="334" x2="1112" y2="334" stroke="#94A3B8" stroke-opacity="0.14"/>
+
+    <text x="800" y="360" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">CONVERGENCE SKETCH</text>
+    <path d="M 800 438 C 840 438 852 400 884 394 C 916 388 928 370 960 365 C 1002 358 1048 357 1112 356" fill="none" stroke="#A3E635" stroke-opacity="0.8" stroke-width="1.8"/>
+    <line x1="800" y1="438" x2="1112" y2="438" stroke="#64748B" stroke-opacity="0.5"/>
+    <line x1="800" y1="438" x2="800" y2="344" stroke="#64748B" stroke-opacity="0.5"/>
+    <text x="1094" y="430" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="8">k</text>
+    <text x="778" y="356" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="8" text-anchor="end">f</text>
+    <text x="804" y="428" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="8">step 0</text>
+  </g>
+
+  <text x="64" y="504" fill="#FBBF24" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="11">HONEST STATUS · This is an explanatory illustration only. MathSphere AI does not yet expose a gradient-descent, SGD or optimiser engine.</text>
+  <text x="1136" y="524" fill="#475569" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9" text-anchor="end">docs/readme-assets/gradient-descent.svg</text>
+</svg>

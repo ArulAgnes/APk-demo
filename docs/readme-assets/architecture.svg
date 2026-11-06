@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="archTitle archDesc">
+  <title id="archTitle">MathSphere AI system architecture</title>
+  <desc id="archDesc">Browser pages call Next.js API routes, which pass through one solver registry into deterministic TypeScript mathematics engines. Auth and notebook data persist in PostgreSQL.</desc>
+  <defs>
+    <linearGradient id="archBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset="0.55" stop-color="#0F172A"/>
+      <stop offset="1" stop-color="#111827"/>
+    </linearGradient>
+    <pattern id="archGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#94A3B8" stroke-opacity="0.07" stroke-width="1"/>
+    </pattern>
+    <filter id="archGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <marker id="archArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#00D4FF"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="760" rx="28" fill="url(#archBg)"/>
+  <rect width="1200" height="760" rx="28" fill="url(#archGrid)"/>
+  <path d="M 0 1 H 1200" stroke="#00D4FF" stroke-opacity="0.35"/>
+  <circle cx="80" cy="720" r="160" fill="#A78BFA" fill-opacity="0.04"/>
+  <circle cx="1140" cy="80" r="140" fill="#00D4FF" fill-opacity="0.05"/>
+
+  <text x="64" y="64" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12" letter-spacing="4">SYSTEM DESIGN</text>
+  <text x="64" y="112" fill="#FFFFFF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="42" font-weight="700">ONE DETERMINISTIC PATH</text>
+  <text x="64" y="140" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="12">Client input → JSON payload → solver registry → TypeScript engine → verified result</text>
+
+  <g>
+    <rect x="938" y="42" width="198" height="38" rx="19" fill="#A3E635" fill-opacity="0.08" stroke="#A3E635" stroke-opacity="0.35"/>
+    <circle cx="960" cy="61" r="5" fill="#A3E635" filter="url(#archGlow)"/>
+    <text x="975" y="65" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="1.4">LOCAL &amp; DETERMINISTIC</text>
+  </g>
+
+  <g>
+    <rect x="64" y="170" width="808" height="112" rx="16" fill="#0F172A" fill-opacity="0.82" stroke="#00D4FF" stroke-opacity="0.22"/>
+    <text x="88" y="196" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">01 · BROWSER UI (NEXT.JS APP ROUTER)</text>
+    <g font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" fill="#CBD5E1" text-anchor="middle">
+      <rect x="88" y="212" width="132" height="42" rx="9" fill="#00D4FF" fill-opacity="0.07" stroke="#00D4FF" stroke-opacity="0.25"/>
+      <text x="154" y="237">/topics/[topic]</text>
+      <rect x="232" y="212" width="112" height="42" rx="9" fill="#00D4FF" fill-opacity="0.07" stroke="#00D4FF" stroke-opacity="0.25"/>
+      <text x="288" y="237">/calculator</text>
+      <rect x="356" y="212" width="96" height="42" rx="9" fill="#00D4FF" fill-opacity="0.07" stroke="#00D4FF" stroke-opacity="0.25"/>
+      <text x="404" y="237">/practice</text>
+      <rect x="464" y="212" width="104" height="42" rx="9" fill="#00D4FF" fill-opacity="0.07" stroke="#00D4FF" stroke-opacity="0.25"/>
+      <text x="516" y="237">/notebook</text>
+      <rect x="580" y="212" width="112" height="42" rx="9" fill="#00D4FF" fill-opacity="0.07" stroke="#00D4FF" stroke-opacity="0.25"/>
+      <text x="636" y="237">/validation</text>
+      <rect x="704" y="212" width="144" height="42" rx="9" fill="#00D4FF" fill-opacity="0.04" stroke="#94A3B8" stroke-opacity="0.2"/>
+      <text x="776" y="237" fill="#94A3B8">+ 9 more routes</text>
+    </g>
+  </g>
+
+  <line x1="468" y1="282" x2="468" y2="324" stroke="#00D4FF" stroke-width="1.6" marker-end="url(#archArrow)"/>
+  <text x="480" y="308" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">FETCH · JSON</text>
+
+  <g>
+    <rect x="64" y="330" width="808" height="104" rx="16" fill="#0F172A" fill-opacity="0.82" stroke="#A78BFA" stroke-opacity="0.28"/>
+    <text x="88" y="356" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">02 · ROUTE HANDLERS</text>
+    <g font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" fill="#CBD5E1" text-anchor="middle">
+      <rect x="88" y="370" width="104" height="40" rx="9" fill="#A78BFA" fill-opacity="0.07" stroke="#A78BFA" stroke-opacity="0.25"/>
+      <text x="140" y="394">/api/solve</text>
+      <rect x="202" y="370" width="130" height="40" rx="9" fill="#A78BFA" fill-opacity="0.07" stroke="#A78BFA" stroke-opacity="0.25"/>
+      <text x="267" y="394">/api/questions</text>
+      <rect x="342" y="370" width="106" height="40" rx="9" fill="#A78BFA" fill-opacity="0.07" stroke="#A78BFA" stroke-opacity="0.25"/>
+      <text x="395" y="394">/api/tests</text>
+      <rect x="458" y="370" width="98" height="40" rx="9" fill="#A78BFA" fill-opacity="0.07" stroke="#A78BFA" stroke-opacity="0.25"/>
+      <text x="507" y="394">/api/auth</text>
+      <rect x="566" y="370" width="126" height="40" rx="9" fill="#A78BFA" fill-opacity="0.07" stroke="#A78BFA" stroke-opacity="0.25"/>
+      <text x="629" y="394">/api/notebook</text>
+      <rect x="702" y="370" width="126" height="40" rx="9" fill="#A78BFA" fill-opacity="0.07" stroke="#A78BFA" stroke-opacity="0.25"/>
+      <text x="765" y="394">/api/progress</text>
+    </g>
+  </g>
+
+  <line x1="468" y1="434" x2="468" y2="470" stroke="#00D4FF" stroke-width="1.6" marker-end="url(#archArrow)"/>
+  <text x="480" y="458" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">CALL</text>
+
+  <g>
+    <rect x="64" y="476" width="808" height="92" rx="16" fill="#0F172A" fill-opacity="0.9" stroke="#00D4FF" stroke-opacity="0.45"/>
+    <text x="88" y="502" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">03 · SINGLE SOLVER REGISTRY</text>
+    <text x="88" y="532" fill="#FFFFFF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="17">solve(operationId, payload)</text>
+    <text x="88" y="552" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">payload validation · step builder · verification · jsonSafe BigInt boundary</text>
+    <rect x="700" y="500" width="148" height="34" rx="8" fill="#00D4FF" fill-opacity="0.08" stroke="#00D4FF" stroke-opacity="0.3"/>
+    <text x="774" y="522" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" text-anchor="middle">54 OPERATIONS</text>
+  </g>
+
+  <line x1="468" y1="568" x2="468" y2="604" stroke="#00D4FF" stroke-width="1.6" marker-end="url(#archArrow)"/>
+  <text x="480" y="592" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">EXECUTE</text>
+
+  <g>
+    <rect x="64" y="610" width="808" height="118" rx="16" fill="#0F172A" fill-opacity="0.82" stroke="#A3E635" stroke-opacity="0.25"/>
+    <text x="88" y="636" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">04 · NUMERICAL ENGINE (TYPESCRIPT)</text>
+    <g font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" fill="#CBD5E1" text-anchor="middle">
+      <rect x="88" y="650" width="182" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="179" y="670">core · elimination</text>
+      <rect x="280" y="650" width="182" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="371" y="670">eigen · QR</text>
+      <rect x="472" y="650" width="182" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="563" y="670">svd · pseudoinverse</text>
+      <rect x="664" y="650" width="184" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="756" y="670">stats · PCA</text>
+      <rect x="88" y="688" width="182" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="179" y="708">numberTheory · BigInt</text>
+      <rect x="280" y="688" width="182" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="371" y="708">crypto · entropy</text>
+      <rect x="472" y="688" width="182" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="563" y="708">questions · tests</text>
+      <rect x="664" y="688" width="184" height="30" rx="7" fill="#A3E635" fill-opacity="0.06" stroke="#A3E635" stroke-opacity="0.2"/>
+      <text x="756" y="708">verify · interpret</text>
+    </g>
+  </g>
+
+  <line x1="872" y1="522" x2="900" y2="522" stroke="#A78BFA" stroke-opacity="0.5" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="872" y1="669" x2="900" y2="669" stroke="#A78BFA" stroke-opacity="0.5" stroke-width="1.5" stroke-dasharray="5 4"/>
+
+  <g>
+    <rect x="900" y="170" width="236" height="286" rx="16" fill="#0F172A" fill-opacity="0.82" stroke="#A78BFA" stroke-opacity="0.28"/>
+    <text x="920" y="198" fill="#A78BFA" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">POSTGRESQL · 11 TABLES</text>
+    <g fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">
+      <text x="920" y="226">users</text>
+      <text x="1046" y="226">sessions</text>
+      <text x="920" y="248">books</text>
+      <text x="1046" y="248">saved_solutions</text>
+      <text x="920" y="270">solution_notes</text>
+      <text x="1046" y="270">attempts</text>
+      <text x="920" y="292">topic_progress</text>
+      <text x="1046" y="292">recent_activity</text>
+      <text x="920" y="314">formula_views</text>
+      <text x="1046" y="314">daily_results</text>
+      <text x="920" y="336">app_metrics</text>
+    </g>
+    <line x1="920" y1="356" x2="1116" y2="356" stroke="#94A3B8" stroke-opacity="0.14"/>
+    <text x="920" y="380" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">Drizzle ORM · pg driver</text>
+    <text x="920" y="400" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">jsonb payloads · user-scoped</text>
+    <text x="920" y="420" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">every read and write</text>
+  </g>
+
+  <g>
+    <rect x="900" y="476" width="236" height="144" rx="16" fill="#0F172A" fill-opacity="0.82" stroke="#00D4FF" stroke-opacity="0.25"/>
+    <text x="920" y="504" fill="#00D4FF" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">AUTH &amp; SESSIONS</text>
+    <text x="920" y="532" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">scrypt password hashing</text>
+    <text x="920" y="552" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">random 32-byte session tokens</text>
+    <text x="920" y="572" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">httpOnly cookies</text>
+    <text x="920" y="592" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">per-user data isolation</text>
+  </g>
+
+  <g>
+    <rect x="900" y="640" width="236" height="88" rx="16" fill="#0F172A" fill-opacity="0.82" stroke="#A3E635" stroke-opacity="0.25"/>
+    <text x="920" y="668" fill="#A3E635" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10" letter-spacing="2.5">NO EXTERNAL AI</text>
+    <text x="920" y="690" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">all mathematics runs locally</text>
+    <text x="920" y="708" fill="#94A3B8" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="9">no API keys · no model calls</text>
+  </g>
+
+  <text x="64" y="752" fill="#64748B" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace" font-size="10">Question generators, practice grading and the tutor all call the same solve() registry — no answer is fabricated.</text>
+</svg>
