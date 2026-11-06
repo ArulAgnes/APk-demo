@@ -37,6 +37,15 @@ yarn-error.log*
 # deployment
 .vercel
 
+# Android signing and build outputs
+*.jks
+*.keystore
+/android/.gradle/
+/android/local.properties
+/android/app/build/
+/android/build/
+/android/.idea/
+
 # internal notes (not part of the published project)
 /NOTES.md
 

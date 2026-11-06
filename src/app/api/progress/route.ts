@@ -3,6 +3,7 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { attempts, dailyResults, recentActivity, topicProgress } from "@/db/schema";
 import { currentUser } from "@/lib/auth";
+import { withIdempotency } from "@/lib/idempotency";
 import { UNITS, TOPIC_MAP } from "@/lib/solve";
 import { dailyChallenge, expectedAnswer } from "@/lib/questions/bank";
 import type { Level } from "@/lib/types";
@@ -95,51 +96,56 @@ export async function POST(req: Request) {
   const topicId = String(body.topicId ?? "");
   const unit = String(body.unit ?? TOPIC_MAP.get(topicId)?.unit ?? "");
   try {
-    if (action === "visit" && topicId) {
-      await db
-        .insert(topicProgress)
-        .values({ userId: user.id, unit, topicId, visits: 1 })
-        .onConflictDoUpdate({
-          target: [topicProgress.userId, topicProgress.topicId],
-          set: { visits: sql`${topicProgress.visits} + 1`, lastSeen: new Date() },
+    const outcome = await withIdempotency(user.id, body.clientRequestId, action, async (exec) => {
+      if (action === "visit" && topicId) {
+        await exec
+          .insert(topicProgress)
+          .values({ userId: user.id, unit, topicId, visits: 1 })
+          .onConflictDoUpdate({
+            target: [topicProgress.userId, topicProgress.topicId],
+            set: { visits: sql`${topicProgress.visits} + 1`, lastSeen: new Date() },
+          });
+        await exec.insert(recentActivity).values({ userId: user.id, kind: "visit", unit, topicId, label: TOPIC_MAP.get(topicId)?.title ?? topicId });
+        return NextResponse.json({ ok: true });
+      }
+      if (action === "attempt" && topicId) {
+        const correct = Boolean(body.correct);
+        const level = normalizeLevel(body.level);
+        await exec.insert(attempts).values({
+          userId: user.id, unit, topicId, level,
+          questionId: String(body.questionId ?? ""), mode: String(body.mode ?? "practice"),
+          correct, timeMs: normalizeTime(body.timeMs),
+          givenAnswer: String(body.givenAnswer ?? "").slice(0, 500),
+          expectedAnswer: String(body.expectedAnswer ?? "").slice(0, 500),
         });
-      await db.insert(recentActivity).values({ userId: user.id, kind: "visit", unit, topicId, label: TOPIC_MAP.get(topicId)?.title ?? topicId });
-      return NextResponse.json({ ok: true });
-    }
-    if (action === "attempt" && topicId) {
-      const correct = Boolean(body.correct);
-      const level = normalizeLevel(body.level);
-      await db.insert(attempts).values({
-        userId: user.id, unit, topicId, level,
-        questionId: String(body.questionId ?? ""), mode: String(body.mode ?? "practice"),
-        correct, timeMs: normalizeTime(body.timeMs),
-        givenAnswer: String(body.givenAnswer ?? "").slice(0, 500),
-        expectedAnswer: String(body.expectedAnswer ?? "").slice(0, 500),
-      });
-      await db
-        .insert(topicProgress)
-        .values({ userId: user.id, unit, topicId, visits: 0, solved: 1, correct: correct ? 1 : 0 })
-        .onConflictDoUpdate({
-          target: [topicProgress.userId, topicProgress.topicId],
-          set: {
-            solved: sql`${topicProgress.solved} + 1`,
-            correct: sql`${topicProgress.correct} + ${correct ? 1 : 0}`,
-            lastSeen: new Date(),
-          },
-        });
-      return NextResponse.json({ ok: true });
-    }
-    if (action === "daily") {
-      if (!topicId) return NextResponse.json({ ok: false, error: "topicId is required" }, { status: 400 });
-      const day = new Date().toISOString().slice(0, 10);
-      const timeMs = normalizeTime(body.timeMs);
-      await db
-        .insert(dailyResults)
-        .values({ userId: user.id, day, topicId, level: normalizeLevel(body.level), correct: Boolean(body.correct), timeMs })
-        .onConflictDoUpdate({ target: [dailyResults.userId, dailyResults.day], set: { correct: Boolean(body.correct), timeMs } });
-      return NextResponse.json({ ok: true });
-    }
-    return NextResponse.json({ ok: false, error: "Unknown action" }, { status: 400 });
+        await exec
+          .insert(topicProgress)
+          .values({ userId: user.id, unit, topicId, visits: 0, solved: 1, correct: correct ? 1 : 0 })
+          .onConflictDoUpdate({
+            target: [topicProgress.userId, topicProgress.topicId],
+            set: {
+              solved: sql`${topicProgress.solved} + 1`,
+              correct: sql`${topicProgress.correct} + ${correct ? 1 : 0}`,
+              lastSeen: new Date(),
+            },
+          });
+        return NextResponse.json({ ok: true });
+      }
+      if (action === "daily") {
+        if (!topicId) return NextResponse.json({ ok: false, error: "topicId is required" }, { status: 400 });
+        const day = new Date().toISOString().slice(0, 10);
+        const timeMs = normalizeTime(body.timeMs);
+        await exec
+          .insert(dailyResults)
+          .values({ userId: user.id, day, topicId, level: normalizeLevel(body.level), correct: Boolean(body.correct), timeMs })
+          .onConflictDoUpdate({ target: [dailyResults.userId, dailyResults.day], set: { correct: Boolean(body.correct), timeMs } });
+        return NextResponse.json({ ok: true });
+      }
+      return NextResponse.json({ ok: false, error: "Unknown action" }, { status: 400 });
+    });
+
+    if (outcome.duplicate) return NextResponse.json({ ok: true, duplicate: true });
+    return outcome.result;
   } catch (e) {
     return NextResponse.json({ ok: false, error: e instanceof Error ? e.message : "Database error" }, { status: 500 });
   }

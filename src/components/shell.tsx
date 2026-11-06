@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { OfflineStatus } from "./offline-status";
 
 const PRIMARY = [
   { href: "/", label: "Dashboard", icon: "⌂" },
@@ -118,6 +119,8 @@ export function Shell({ children }: { children: ReactNode }) {
           {[...PRIMARY, ...SECONDARY].map((l) => <Link key={l.href} href={l.href} className={linkCls(l.href)}>{l.label}</Link>)}
         </nav>
       </header>
+
+      <OfflineStatus />
 
       <main className="mx-auto min-h-[calc(100vh-64px)] max-w-[1500px] px-4 py-7 sm:px-6 sm:py-10">{children}</main>
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="MathSphere AI">
+  <defs>
+    <linearGradient id="m" x1="260" y1="300" x2="760" y2="700" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9db4ff"/>
+      <stop offset="0.55" stop-color="#6c8cff"/>
+      <stop offset="1" stop-color="#a97bff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(512 430) rotate(90) scale(360)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6c8cff" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#6c8cff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="512" cy="500" r="360" fill="url(#glow)"/>
+  <g fill="none" stroke-linecap="round">
+    <ellipse cx="512" cy="512" rx="354" ry="158" transform="rotate(-28 512 512)" stroke="#6c8cff" stroke-opacity="0.55" stroke-width="16"/>
+    <ellipse cx="512" cy="512" rx="354" ry="158" transform="rotate(28 512 512)" stroke="#a97bff" stroke-opacity="0.38" stroke-width="12"/>
+    <path d="M300 650V374l212 206 212-206v276" stroke="url(#m)" stroke-width="68" stroke-linejoin="round" stroke-linecap="round"/>
+  </g>
+  <circle cx="806" cy="268" r="26" fill="#56e0a4"/>
+  <circle cx="218" cy="742" r="17" fill="#4fd6e0"/>
+</svg>

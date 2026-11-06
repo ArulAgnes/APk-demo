@@ -7,6 +7,7 @@ import { UNITS, TOPIC_MAP } from "@/lib/solve";
 import { questionsForTopic, randomQuestion, expectedAnswer, solveQuestion } from "@/lib/questions/bank";
 import { Math as MathText } from "@/components/katex";
 import { Solution } from "@/components/solution";
+import { postJsonWithOffline } from "@/lib/offline/client";
 
 interface Active { q: BankQuestion; expected: string; options?: string[]; startedAt: number }
 interface Record_ { q: BankQuestion; given: string; correct: boolean; timeMs: number; expected: string }
@@ -76,10 +77,11 @@ export default function PracticePage() {
     setSubmitted(true);
     const sol = solveQuestion(a.q);
     setSolution(sol);
-    fetch("/api/progress", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "attempt", topicId: a.q.topicId, unit: a.q.unit, level, questionId: a.q.id, mode: timed ? "exam" : "practice", correct, timeMs, givenAnswer: given, expectedAnswer: a.expected }),
-    }).catch(() => {});
+    void postJsonWithOffline(
+      "/api/progress",
+      { action: "attempt", topicId: a.q.topicId, unit: a.q.unit, level, questionId: a.q.id, mode: timed ? "exam" : "practice", correct, timeMs, givenAnswer: given, expectedAnswer: a.expected },
+      { label: "Practice attempt" }
+    ).catch(() => {});
   };
   const next = () => { setIndex((i) => i + 1); setGiven(""); setSubmitted(false); setSolution(null); };
   const finish = index >= active.length && active.length > 0;

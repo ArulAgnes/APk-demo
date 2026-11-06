@@ -12,6 +12,7 @@ import { formulasForTopic } from "@/lib/content/formulas";
 import { DynamicForm } from "./editors";
 import { Solution } from "./solution";
 import { Math as MathText } from "./katex";
+import { postJsonWithOffline } from "@/lib/offline/client";
 
 interface Props {
   topic: TopicDef;
@@ -34,7 +35,7 @@ export function Workspace({ topic, initialLevel = "intermediate", initialQuestio
   const [originalPayload, setOriginalPayload] = useState<Payload>({});
   const [result, setResult] = useState<SolveResult | null>(null);
   const [dirty, setDirty] = useState(false);
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "queued" | "error">("idle");
   const [saveError, setSaveError] = useState("");
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
@@ -97,10 +98,11 @@ export function Workspace({ topic, initialLevel = "intermediate", initialQuestio
       setResult(r);
       setBusy(false);
       if (r.ok) {
-        fetch("/api/progress", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: "attempt", topicId: topic.id, unit: topic.unit, level, questionId: question?.id ?? "custom", mode: "workspace", correct: true, timeMs: 0 }),
-        }).catch(() => {});
+        void postJsonWithOffline(
+          "/api/progress",
+          { action: "attempt", topicId: topic.id, unit: topic.unit, level, questionId: question?.id ?? "custom", mode: "workspace", correct: true, timeMs: 0 },
+          { label: "Practice progress" }
+        ).catch(() => {});
       }
     }, 30);
   };
@@ -109,21 +111,22 @@ export function Workspace({ topic, initialLevel = "intermediate", initialQuestio
     if (!result?.ok) return;
     setSaveState("saving"); setSaveError("");
     try {
-      const r = await fetch("/api/notebook", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: asVersion && savedId ? "new-version" : "save-solution",
-          ...(asVersion && savedId ? { id: savedId } : {}),
-          unit: topic.unit, topicId: topic.id, operationId: opId,
-          questionId: question?.id ?? null, questionNumber: custom ? null : qIndex + 1,
-          level, source: custom ? "custom" : dirty ? "modified" : question?.source ?? "curated",
-          prompt: question?.prompt ?? `${op?.label ?? "Custom problem"} — user-entered input`,
-          originalPayload, finalPayload: payload, notes,
-          section: topic.title,
-        }),
-      });
-      const d = await r.json();
-      if (!d.ok) { setSaveState("error"); setSaveError(d.error ?? "The server rejected the save."); return; }
+      const outcome = await postJsonWithOffline<{ ok: boolean; error?: string }>("/api/notebook", {
+        action: asVersion && savedId ? "new-version" : "save-solution",
+        ...(asVersion && savedId ? { id: savedId } : {}),
+        unit: topic.unit, topicId: topic.id, operationId: opId,
+        questionId: question?.id ?? null, questionNumber: custom ? null : qIndex + 1,
+        level, source: custom ? "custom" : dirty ? "modified" : question?.source ?? "curated",
+        prompt: question?.prompt ?? `${op?.label ?? "Custom problem"} — user-entered input`,
+        originalPayload, finalPayload: payload, notes,
+        section: topic.title,
+      }, { label: "Saved solution" });
+      if (outcome.queued) {
+        setSaveState("queued");
+        return;
+      }
+      const d = outcome.data;
+      if (!d?.ok) { setSaveState("error"); setSaveError(d?.error ?? "The server rejected the save."); return; }
       setSaveState("saved");
       setTimeout(() => setSaveState("idle"), 4000);
     } catch (e) {
@@ -253,11 +256,12 @@ export function Workspace({ topic, initialLevel = "intermediate", initialQuestio
               <h3 className="display mt-1 text-lg">Save this solution</h3>
               <p className="mt-2 text-xs leading-relaxed text-dim">Saves the original input, your edited input, every step, all verification results, formulas and visualization data — so it can be reopened and recalculated.</p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <button className="btn btn-primary" onClick={() => save(false)} disabled={saveState === "saving"}>{saveState === "saving" ? "Saving…" : "Save to My MathBook"}</button>
+                <button className="btn btn-primary" onClick={() => save(false)} disabled={saveState === "saving" || saveState === "queued"}>{saveState === "saving" ? "Saving…" : saveState === "queued" ? "Queued offline" : "Save to My MathBook"}</button>
                 {savedId && <button className="btn btn-sm" onClick={() => save(true)}>Save as new version</button>}
                 <Link href="/notebook" className="btn btn-sm">Open notebook</Link>
               </div>
               {saveState === "saved" && <p className="mt-2 text-xs text-mint">✓ Saved — the database confirmed the write.</p>}
+              {saveState === "queued" && <p className="mt-2 text-xs text-amber">Queued on this device — it will sync when the connection returns.</p>}
               {saveState === "error" && <p className="mt-2 text-xs text-rose">✕ Not saved: {saveError} (Sign in first if you haven&apos;t.)</p>}
             </div>
           )}

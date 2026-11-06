@@ -6,6 +6,7 @@ import type { SolveResult } from "@/lib/types";
 import { UNITS, TOPIC_MAP } from "@/lib/solve";
 import { Math as MathText } from "@/components/katex";
 import { Visualization } from "@/components/visuals";
+import { postJsonWithOffline } from "@/lib/offline/client";
 
 interface SolutionRow {
   id: number; bookId: number | null; section: string; unit: string; topicId: string; operationId: string;
@@ -15,7 +16,7 @@ interface SolutionRow {
   createdAt: string; updatedAt: string;
 }
 interface Book { id: number; title: string; subject: string; createdAt: string; solutionCount: number }
-type SaveStatus = "idle" | "saving" | "saved" | "failed";
+type SaveStatus = "idle" | "saving" | "saved" | "queued" | "failed";
 
 export default function NotebookPage() {
   const [loading, setLoading] = useState(true);
@@ -23,6 +24,7 @@ export default function NotebookPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [solutions, setSolutions] = useState<SolutionRow[]>([]);
   const [error, setError] = useState("");
+  const [queuedNotice, setQueuedNotice] = useState("");
   const [search, setSearch] = useState("");
   const [unitFilter, setUnitFilter] = useState("all");
   const [view, setView] = useState<"all" | "recent" | "bookmarked">("all");
@@ -47,10 +49,21 @@ export default function NotebookPage() {
   useEffect(load, []);
 
   const mutate = async (body: Record<string, unknown>) => {
-    const r = await fetch("/api/notebook", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    const d = await r.json();
-    if (!d.ok) { setError(d.error ?? "The operation failed"); return false; }
-    load(); return true;
+    try {
+      const outcome = await postJsonWithOffline<{ ok: boolean; error?: string }>("/api/notebook", body, { label: "Notebook change" });
+      if (outcome.queued) {
+        setQueuedNotice("Offline — this change is saved on the device and will sync when you reconnect.");
+        return true;
+      }
+      const d = outcome.data;
+      if (!d?.ok) { setError(d?.error ?? "The operation failed"); return false; }
+      setQueuedNotice("");
+      load();
+      return true;
+    } catch {
+      setError("Network error — the notebook change was not queued.");
+      return false;
+    }
   };
 
   const filtered = useMemo(() => solutions.filter((s) => {
@@ -84,6 +97,7 @@ export default function NotebookPage() {
         <button className="btn btn-sm" onClick={load}>↻ Refresh</button>
       </div>
       {error && <div className="glass rounded-xl border-rose/40 p-3 text-xs text-rose">{error}</div>}
+      {queuedNotice && <div className="glass rounded-xl border-amber/40 p-3 text-xs text-amber">{queuedNotice}</div>}
 
       {/* Books */}
       <div className="glass rounded-2xl p-5">
@@ -194,9 +208,10 @@ function BookReader({ solution, index, total, onClose, onNav, books, onMove, onV
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(async () => {
       try {
-        const r = await fetch("/api/notebook", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "update-notes", id: solution.id, notes: v }) });
-        const d = await r.json();
-        setStatus(d.ok && d.saved ? "saved" : "failed");
+        const outcome = await postJsonWithOffline<{ ok: boolean; saved?: boolean }>("/api/notebook", { action: "update-notes", id: solution.id, notes: v }, { label: "Notebook notes" });
+        if (outcome.queued) { setStatus("queued"); return; }
+        const d = outcome.data;
+        setStatus(d?.ok && d.saved ? "saved" : "failed");
       } catch { setStatus("failed"); }
     }, 700);
   };
@@ -247,7 +262,7 @@ function BookReader({ solution, index, total, onClose, onNav, books, onMove, onV
                 <div className="grid grid-cols-2 gap-3"><div><p className="mono-label">SAVED</p><p className="mt-1 text-xs">{new Date(solution.createdAt).toLocaleString()}</p></div><div><p className="mono-label">VERSION</p><p className="mt-1 text-xs">v{solution.version}{solution.parentVersion ? ` ← v${solution.parentVersion}` : ""}</p></div></div>
               </div>
               <div className="mt-6 border-t border-[var(--line)] pt-4">
-                <div className="flex items-center justify-between"><p className="mono-label">MY NOTES</p><span className={`text-[10px] ${status === "failed" ? "text-rose" : status === "saved" ? "text-mint" : "text-faint"}`}>{status === "saving" ? "Saving…" : status === "saved" ? "Saved ✓" : status === "failed" ? "Failed to save" : "Autosave on"}</span></div>
+                <div className="flex items-center justify-between"><p className="mono-label">MY NOTES</p><span className={`text-[10px] ${status === "failed" ? "text-rose" : status === "saved" || status === "queued" ? "text-mint" : "text-faint"}`}>{status === "saving" ? "Saving…" : status === "saved" ? "Saved ✓" : status === "queued" ? "Queued offline" : status === "failed" ? "Failed to save" : "Autosave on"}</span></div>
                 <textarea className="ms-input mt-2 min-h-[110px] resize-y" aria-label="Personal notes" placeholder="Write what you learned here…" value={notes} onChange={(e) => onNotes(e.target.value)} />
               </div>
               <div className="mt-4 flex flex-wrap gap-2">

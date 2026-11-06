@@ -232,6 +232,28 @@ export const dailyResults = pgTable(
   ]
 );
 
+/* ------------------------------------------------------------------ */
+/* Offline write ledger                                                */
+/* ------------------------------------------------------------------ */
+export const syncEvents = pgTable(
+  "sync_events",
+  {
+    id: serial("id").primaryKey(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    clientRequestId: text("client_request_id").notNull(),
+    operation: text("operation").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("sync_events_user_request_idx").on(t.userId, t.clientRequestId),
+    index("sync_events_created_idx").on(t.createdAt),
+    check("sync_events_request_id_check", sql`length(${t.clientRequestId}) between 8 and 100`),
+    check("sync_events_operation_check", sql`length(${t.operation}) between 1 and 80`),
+  ]
+);
+
 export const appMetrics = pgTable(
   "app_metrics",
   {

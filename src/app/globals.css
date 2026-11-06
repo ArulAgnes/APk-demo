@@ -323,3 +323,111 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- mobile / Capacitor shell ---------- */
+body {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  overscroll-behavior-y: none;
+}
+
+header.sticky {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+main {
+  padding-bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
+}
+
+.ms-offline-banner-wrap {
+  padding: 0.65rem 1rem 0;
+}
+
+.ms-offline-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: 1500px;
+  margin: 0 auto;
+  border: 1px solid rgba(108, 140, 255, 0.35);
+  border-radius: 0.75rem;
+  background: rgba(108, 140, 255, 0.1);
+  color: var(--fg-dim);
+  padding: 0.55rem 0.75rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.ms-offline-banner.is-offline {
+  border-color: rgba(255, 190, 77, 0.45);
+  background: rgba(255, 190, 77, 0.1);
+  color: #ffcf7a;
+}
+
+.ms-offline-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #6c8cff;
+  animation: ms-pulse-ring 2.2s ease-out infinite;
+}
+
+.ms-offline-banner.is-offline .ms-offline-dot {
+  background: #ffbe4d;
+}
+
+.ms-offline-copy {
+  min-width: 0;
+}
+
+.ms-offline-retry {
+  margin-left: auto;
+  flex: 0 0 auto;
+  border: 1px solid currentColor;
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ms-offline-retry:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .ms-input,
+  .ms-select,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .btn-sm {
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ms-offline-banner-wrap {
+    padding: 0.5rem 0.75rem 0;
+  }
+
+  .ms-offline-banner {
+    align-items: flex-start;
+    font-size: 0.7rem;
+  }
+}

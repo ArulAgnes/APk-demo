@@ -14,6 +14,7 @@ const expectedTables = [
   "recent_activity",
   "formula_views",
   "daily_results",
+  "sync_events",
   "app_metrics",
 ];
 

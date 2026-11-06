@@ -8,6 +8,13 @@
       "when": 1793999207455,
       "tag": "0000_far_hiroim",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794002616118,
+      "tag": "0001_wooden_drax",
+      "breakpoints": true
     }
   ]
 }
