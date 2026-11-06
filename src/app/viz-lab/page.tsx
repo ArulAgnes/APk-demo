@@ -23,22 +23,26 @@ const QUICK = [
   { topic: "sideChannel", op: "crypto.sidechannel", label: "Timing traces", icon: "⏱" },
 ];
 
+function getExamplePayload(topic: string, op: string) {
+  const qs = questionsForTopic(topic, "intermediate" as Level, 10);
+  const q = qs.find((x) => x.operationId === op) ?? qs[0];
+  return q ? q.payload : {};
+}
+
 function VizLabInner() {
   const params = useSearchParams();
   const [topic, setTopic] = useState(params.get("topic") ?? "svd");
   const [op, setOp] = useState(params.get("op") ?? "svd.full");
-  const [payload, setPayload] = useState<Payload>({});
+  const [payload, setPayload] = useState<Payload>(() => getExamplePayload(params.get("topic") ?? "svd", params.get("op") ?? "svd.full"));
   const [result, setResult] = useState<SolveResult | null>(null);
   const ops = TOPIC_OPS[topic] ?? [];
   const operation = getOperation(op) ?? getOperation(ops[0] ?? "");
 
   const loadExample = () => {
-    const qs = questionsForTopic(topic, "intermediate" as Level, 10);
-    const q = qs.find((x) => x.operationId === op) ?? qs[0];
-    if (q) { setPayload(q.payload); setResult(null); }
+    setPayload(getExamplePayload(topic, op));
+    setResult(null);
   };
   const reset = () => { setPayload({}); setResult(null); };
-  useMemo(() => { if (!Object.keys(payload).length) loadExample(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [topic, op]);
 
   return (
     <div className="space-y-6">
@@ -51,7 +55,7 @@ function VizLabInner() {
       <div className="glass rounded-2xl p-4">
         <p className="mono-label">QUICK EXPERIMENTS</p>
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {QUICK.map((q) => <button key={q.topic + q.op} onClick={() => { setTopic(q.topic); setOp(q.op); setPayload({}); setResult(null); }}
+          {QUICK.map((q) => <button key={q.topic + q.op} onClick={() => { setTopic(q.topic); setOp(q.op); setPayload(getExamplePayload(q.topic, q.op)); setResult(null); }}
             className={`btn btn-sm ${topic === q.topic && op === q.op ? "btn-primary" : ""}`}><span className="mr-1">{q.icon}</span>{q.label}</button>)}
         </div>
       </div>
@@ -60,11 +64,11 @@ function VizLabInner() {
         <div className="glass-strong rounded-2xl p-5 space-y-4">
           <div>
             <label className="mono-label">TOPIC</label>
-            <select className="ms-select mt-1" value={topic} aria-label="Visualization topic" onChange={(e) => { setTopic(e.target.value); const nop = TOPIC_OPS[e.target.value]?.[0] ?? ""; setOp(nop); setPayload({}); setResult(null); }}>
+            <select className="ms-select mt-1" value={topic} aria-label="Visualization topic" onChange={(e) => { const nt = e.target.value; const nop = TOPIC_OPS[nt]?.[0] ?? ""; setTopic(nt); setOp(nop); setPayload(getExamplePayload(nt, nop)); setResult(null); }}>
               {UNITS.flatMap((u) => u.topics).map((t) => <option key={t.id} value={t.id}>Unit {uNum(t.unit)} · {t.title}</option>)}
             </select>
           </div>
-          {ops.length > 1 && <div><label className="mono-label">OPERATION</label><select className="ms-select mt-1" value={op} aria-label="Operation" onChange={(e) => { setOp(e.target.value); setPayload({}); setResult(null); }}>{ops.map((o) => <option key={o} value={o}>{getOperation(o)?.label ?? o}</option>)}</select></div>}
+          {ops.length > 1 && <div><label className="mono-label">OPERATION</label><select className="ms-select mt-1" value={op} aria-label="Operation" onChange={(e) => { const nop = e.target.value; setOp(nop); setPayload(getExamplePayload(topic, nop)); setResult(null); }}>{ops.map((o) => <option key={o} value={o}>{getOperation(o)?.label ?? o}</option>)}</select></div>}
           {operation && <DynamicForm key={`${topic}-${op}`} fields={operation.fields} payload={payload} setPayload={(p) => { setPayload(p); setResult(null); }} />}
           <div className="flex flex-wrap gap-2">
             <button className="btn btn-primary" onClick={() => setResult(solve(op, payload))}>Visualize →</button>

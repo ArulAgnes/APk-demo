@@ -27,7 +27,13 @@ interface User { id: number; username: string; displayName: string }
 
 export function Shell({ children }: { children: ReactNode }) {
   const path = usePathname();
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("ms-theme");
+      if (saved === "light" || saved === "dark") return saved;
+    }
+    return "dark";
+  });
   const [more, setMore] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [authOpen, setAuthOpen] = useState(false);
@@ -36,10 +42,6 @@ export function Shell({ children }: { children: ReactNode }) {
   const [authError, setAuthError] = useState("");
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("ms-theme");
-    if (saved === "light" || saved === "dark") setTheme(saved);
-  }, []);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("ms-theme", theme);

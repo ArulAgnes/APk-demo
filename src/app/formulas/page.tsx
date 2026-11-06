@@ -18,12 +18,26 @@ function FormulasInner() {
   const [copied, setCopied] = useState("");
 
   useEffect(() => {
-    try { setFavs(JSON.parse(localStorage.getItem("ms-favs") ?? "[]")); setRecent(JSON.parse(localStorage.getItem("ms-recent") ?? "[]")); } catch { /* ignore */ }
+    queueMicrotask(() => {
+      try {
+        setFavs(JSON.parse(localStorage.getItem("ms-favs") ?? "[]"));
+        setRecent(JSON.parse(localStorage.getItem("ms-recent") ?? "[]"));
+      } catch { /* ignore */ }
+    });
   }, []);
-  useEffect(() => { const f = params.get("focus"); if (f) setFocus(f); }, [params]);
+  useEffect(() => {
+    const f = params.get("focus");
+    if (f) queueMicrotask(() => setFocus(f));
+  }, [params]);
   useEffect(() => {
     if (!focus) return;
-    setRecent((old) => { const next = [focus, ...old.filter((x) => x !== focus)].slice(0, 8); localStorage.setItem("ms-recent", JSON.stringify(next)); return next; });
+    queueMicrotask(() => {
+      setRecent((old) => {
+        const next = [focus, ...old.filter((x) => x !== focus)].slice(0, 8);
+        localStorage.setItem("ms-recent", JSON.stringify(next));
+        return next;
+      });
+    });
   }, [focus]);
 
   const topics = useMemo(() => UNITS.filter((u) => unit === "all" || u.id === unit).flatMap((u) => u.topics), [unit]);

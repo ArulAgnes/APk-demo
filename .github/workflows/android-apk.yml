@@ -3,24 +3,38 @@ name: Android APK
 on:
   workflow_dispatch:
     inputs:
-      build_type:
-        description: Build type
+      build_mode:
+        description: "Application build mode"
         required: true
-        default: debug
+        default: "offline"
+        type: choice
+        options:
+          - offline
+          - online
+      build_type:
+        description: "Build type"
+        required: true
+        default: "debug"
         type: choice
         options:
           - debug
           - release
       version_name:
-        description: Android version name
+        description: "Android version name"
         required: false
         default: "3.0.0"
         type: string
       version_code:
-        description: Android version code
+        description: "Android version code"
         required: false
         default: "1"
         type: string
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+      - ".gitignore"
 
 permissions:
   contents: read
@@ -31,15 +45,17 @@ concurrency:
 
 jobs:
   build:
-    name: Build ${{ inputs.build_type }} APK
+    name: Build ${{ inputs.build_mode || 'offline' }} ${{ inputs.build_type || 'debug' }} APK
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:
-      CAPACITOR_SERVER_URL: ${{ vars.CAPACITOR_SERVER_URL }}
-      CAPACITOR_REQUIRE_REMOTE: "1"
+      BUILD_MODE: ${{ inputs.build_mode || 'offline' }}
+      BUILD_TYPE: ${{ inputs.build_type || 'debug' }}
+      CAPACITOR_SERVER_URL: ${{ inputs.build_mode == 'online' && vars.CAPACITOR_SERVER_URL || '' }}
+      CAPACITOR_REQUIRE_REMOTE: ${{ inputs.build_mode == 'online' && '1' || '0' }}
       CAPACITOR_RELEASE: ${{ inputs.build_type == 'release' && '1' || '0' }}
-      ANDROID_VERSION_NAME: ${{ inputs.version_name }}
-      ANDROID_VERSION_CODE: ${{ inputs.version_code }}
+      ANDROID_VERSION_NAME: ${{ inputs.version_name || '3.0.0' }}
+      ANDROID_VERSION_CODE: ${{ inputs.version_code || '1' }}
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
       ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -72,8 +88,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate public HTTPS backend
-        run: npm run android:validate
+      - name: Run offline sync & idempotency tests
+        run: npm run test:offline-sync
+
+      - name: Run mathematical engine verification (107 tests)
+        run: npx tsx -e "import { runSuite } from './src/lib/tests'; const s = runSuite(); console.log('Passed:', s.passed, 'Failed:', s.failed); if (s.failed > 0) process.exit(1);"
 
       - name: Typecheck application
         run: npm run typecheck
@@ -81,15 +100,45 @@ jobs:
       - name: Build Next.js application
         run: npm run build
 
+      - name: Build Android offline bundle
+        run: npm run build:android-web
+
+      - name: Validate Android configuration
+        run: npm run android:validate
+
       - name: Sync Capacitor Android project
         run: npx cap sync android
 
-      - name: Verify native remote configuration
+      - name: Verify native configuration
         run: |
-          node -e "const c=require('./android/app/src/main/assets/capacitor.config.json'); if(!c.server || !c.server.url || !c.server.url.startsWith('https://')) { console.error('Native config does not contain a public HTTPS server URL'); process.exit(1); } console.log('Native remote URL:', new URL(c.server.url).host);"
+          node -e "
+            const fs = require('fs');
+            const c = require('./android/app/src/main/assets/capacitor.config.json');
+            const mode = process.env.BUILD_MODE;
+            console.log('Verifying native assets for mode:', mode);
+            if (mode === 'online') {
+              if (!c.server || !c.server.url || !c.server.url.startsWith('https://')) {
+                console.error('ERROR: Online build requires a valid HTTPS server.url');
+                process.exit(1);
+              }
+              console.log('Online server URL verified:', new URL(c.server.url).host);
+            } else {
+              if (c.server && c.server.url) {
+                console.error('ERROR: Offline build must not define a remote server.url');
+                process.exit(1);
+              }
+              const assetIndex = './android/app/src/main/assets/public/index.html';
+              const assetBundle = './android/app/src/main/assets/public/bundle.js';
+              if (!fs.existsSync(assetIndex) || !fs.existsSync(assetBundle)) {
+                console.error('ERROR: Missing offline assets in android/app/src/main/assets/public');
+                process.exit(1);
+              }
+              console.log('Offline standalone assets verified successfully in APK assets');
+            }
+          "
 
       - name: Prepare release signing
-        if: inputs.build_type == 'release'
+        if: (inputs.build_type || 'debug') == 'release'
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
@@ -106,33 +155,54 @@ jobs:
           echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/mathsphere-release.keystore" >> "$GITHUB_ENV"
 
       - name: Build debug APK
-        if: inputs.build_type == 'debug'
+        if: (inputs.build_type || 'debug') == 'debug'
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew :app:assembleDebug --no-daemon --stacktrace
 
       - name: Build release APK
-        if: inputs.build_type == 'release'
+        if: (inputs.build_type || 'debug') == 'release'
         working-directory: android
         run: |
           chmod +x gradlew
           ./gradlew :app:assembleRelease --no-daemon --stacktrace
 
+      - name: Compute APK checksums and metadata
+        run: |
+          APK_PATH=$(find android/app/build/outputs/apk/ -name "*.apk" | head -n 1)
+          if [ -z "$APK_PATH" ] || [ ! -f "$APK_PATH" ]; then
+            echo "::error::No APK file found in build outputs."
+            exit 1
+          fi
+          FILE_SIZE=$(du -h "$APK_PATH" | cut -f1)
+          SHA256=$(sha256sum "$APK_PATH" | cut -d' ' -f1)
+          echo "APK_PATH=$APK_PATH" >> "$GITHUB_ENV"
+          echo "APK_SIZE=$FILE_SIZE" >> "$GITHUB_ENV"
+          echo "APK_SHA256=$SHA256" >> "$GITHUB_ENV"
+          echo "### MathSphere AI APK Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Mode:** ${{ env.BUILD_MODE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Type:** ${{ env.BUILD_TYPE }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Package ID:** \`com.arulagnes.mathsphereai\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ env.ANDROID_VERSION_NAME }} (code ${{ env.ANDROID_VERSION_CODE }})" >> $GITHUB_STEP_SUMMARY
+          echo "- **APK File:** \`$(basename $APK_PATH)\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **File Size:** $FILE_SIZE" >> $GITHUB_STEP_SUMMARY
+          echo "- **SHA-256 Checksum:** \`$SHA256\`" >> $GITHUB_STEP_SUMMARY
+
       - name: Upload debug APK
-        if: inputs.build_type == 'debug'
+        if: (inputs.build_type || 'debug') == 'debug'
         uses: actions/upload-artifact@v4
         with:
-          name: mathsphere-ai-debug-${{ github.run_number }}
+          name: MathSphere-AI-Android-Debug-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
 
       - name: Upload release APK
-        if: inputs.build_type == 'release'
+        if: (inputs.build_type || 'debug') == 'release'
         uses: actions/upload-artifact@v4
         with:
-          name: mathsphere-ai-release-${{ github.run_number }}
+          name: MathSphere-AI-Android-Release-APK
           path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 14

@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { BankQuestion, Level, SolveResult } from "@/lib/types";
 import { LEVELS, LEVEL_LABEL } from "@/lib/types";
@@ -31,9 +31,9 @@ export default function PracticePage() {
   const [submitted, setSubmitted] = useState(false);
   const [records, setRecords] = useState<Record_[]>([]);
   const [solution, setSolution] = useState<SolveResult | null>(null);
-  const [startedAt] = useState(Date.now());
+  const [startedAt] = useState(() => Date.now());
   const [deadline, setDeadline] = useState<number | null>(null);
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(() => Date.now());
 
   const topics = useMemo(() => UNITS.filter((u) => unit === "all" || u.id === unit).flatMap((u) => u.topics), [unit]);
 
@@ -86,15 +86,15 @@ export default function PracticePage() {
   const next = () => { setIndex((i) => i + 1); setGiven(""); setSubmitted(false); setSolution(null); };
   const finish = index >= active.length && active.length > 0;
   const score = records.filter((r) => r.correct).length;
-  const elapsed = Math.round((Date.now() - startedAt) / 1000);
+  const elapsed = Math.round((now - startedAt) / 1000);
   const remaining = deadline ? Math.max(0, Math.ceil((deadline - now) / 1000)) : null;
 
   // timer tick, only while a test is running
-  useMemo(() => {
+  useEffect(() => {
     if (!deadline || finish) return;
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
-  }, [deadline, finish, now]);
+  }, [deadline, finish]);
 
   return (
     <div className="space-y-6">

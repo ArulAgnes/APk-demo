@@ -1,6 +1,6 @@
 "use client";
 /** My MathBook — private, user-scoped digital notebook with animated two-page reader. */
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import type { SolveResult } from "@/lib/types";
 import { UNITS, TOPIC_MAP } from "@/lib/solve";
@@ -35,7 +35,7 @@ export default function NotebookPage() {
   const [renameText, setRenameText] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<{ kind: "book" | "solution"; id: number } | null>(null);
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true);
     fetch("/api/notebook")
       .then((r) => r.json())
@@ -45,8 +45,21 @@ export default function NotebookPage() {
       })
       .catch(() => setError("Network error"))
       .finally(() => setLoading(false));
-  };
-  useEffect(load, []);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/notebook")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!active) return;
+        if (!d.ok) { setError(d.error ?? "Could not load the notebook"); setUser(null); }
+        else { setUser(d.user); setBooks(d.books ?? []); setSolutions(d.solutions ?? []); setError(""); }
+      })
+      .catch(() => { if (active) setError("Network error"); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, []);
 
   const mutate = async (body: Record<string, unknown>) => {
     try {
@@ -161,7 +174,7 @@ export default function NotebookPage() {
       </div>
 
       {/* Reader */}
-      {current && <BookReader solution={current} index={filtered.findIndex((s) => s.id === current.id)} total={filtered.length}
+      {current && <BookReader key={current.id} solution={current} index={filtered.findIndex((s) => s.id === current.id)} total={filtered.length}
         onClose={() => setReader(null)} onNav={(dir) => { const i = filtered.findIndex((s) => s.id === current.id); const n = filtered[i + dir]; if (n) setReader(n.id); }}
         books={books} onMove={async (bookId, section) => { await mutate({ action: "move", id: current.id, bookId, section }); }}
         onVersion={async () => { await mutate({ action: "new-version", id: current.id, finalPayload: current.finalPayload, prompt: current.prompt }); }}
@@ -199,8 +212,6 @@ function BookReader({ solution, index, total, onClose, onNav, books, onMove, onV
   const [toc, setToc] = useState(false);
   const [bookSearch, setBookSearch] = useState("");
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => { setNotes(solution.notes); setStatus("idle"); setPage(0); }, [solution.id]);
 
   // autosave notes — status only changes AFTER the server confirms
   const onNotes = (v: string) => {

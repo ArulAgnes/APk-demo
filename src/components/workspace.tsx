@@ -26,7 +26,7 @@ interface Props {
 export function Workspace({ topic, initialLevel = "intermediate", initialQuestion = 1, initialOperation, savedPayload = null, savedId = null }: Props) {
   const params = useSearchParams();
   const unit = UNITS.find((u) => u.id === topic.unit);
-  const opIds = TOPIC_OPS[topic.id] ?? [];
+  const opIds = useMemo(() => TOPIC_OPS[topic.id] ?? [], [topic.id]);
   const [level, setLevel] = useState<Level>(initialLevel);
   const [qIndex, setQIndex] = useState(Math.max(0, initialQuestion - 1));
   const [opId, setOpId] = useState(initialOperation && opIds.includes(initialOperation) ? initialOperation : opIds[0] ?? "");
@@ -47,7 +47,7 @@ export function Workspace({ topic, initialLevel = "intermediate", initialQuestio
   const formulas = useMemo(() => formulasForTopic(topic.id), [topic.id]);
 
   /** Load a question's payload into the editor. Never keeps an old answer. */
-  const load = useCallback((q: BankQuestion | null, override?: Payload) => {
+  const load = (q: BankQuestion | null, override?: Payload) => {
     const p = override ?? q?.payload ?? {};
     setPayload(p);
     setOriginalPayload(p);
@@ -55,19 +55,21 @@ export function Workspace({ topic, initialLevel = "intermediate", initialQuestio
     setDirty(false);
     setSaveState("idle");
     if (q && opIds.includes(q.operationId)) setOpId(q.operationId);
-  }, [opIds.join("|")]);
+  };
 
   useEffect(() => {
-    if (savedPayload) {
-      load(null, savedPayload);
-      setCustom(true);
-      setDirty(true);
-      return;
-    }
-    const qs = questionsForTopic(topic.id, level, 10);
-    load(qs[Math.min(qIndex, qs.length - 1)] ?? null);
+    queueMicrotask(() => {
+      if (savedPayload) {
+        load(null, savedPayload);
+        setCustom(true);
+        setDirty(true);
+        return;
+      }
+      const qs = questionsForTopic(topic.id, level, 10);
+      load(qs[Math.min(qIndex, qs.length - 1)] ?? null);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topic.id, level, qIndex]);
+  }, [topic.id, level, qIndex, savedPayload]);
 
   useEffect(() => {
     if (visited.current) return;
@@ -77,9 +79,11 @@ export function Workspace({ topic, initialLevel = "intermediate", initialQuestio
       body: JSON.stringify({ action: "visit", topicId: topic.id, unit: topic.unit }),
     }).catch(() => {});
     const opFromQuery = params.get("op");
-    if (opFromQuery && opIds.includes(opFromQuery)) setOpId(opFromQuery);
     const lv = params.get("level");
-    if (lv && LEVELS.includes(lv as Level)) setLevel(lv as Level);
+    queueMicrotask(() => {
+      if (opFromQuery && opIds.includes(opFromQuery)) setOpId(opFromQuery);
+      if (lv && LEVELS.includes(lv as Level)) setLevel(lv as Level);
+    });
   }, [params, topic.id, topic.unit, opIds]);
 
   const setPayloadTracked = (p: Payload) => {

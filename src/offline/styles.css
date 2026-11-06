@@ -1,0 +1,511 @@
+/* MathSphere AI — Offline Mobile Application Styles */
+:root {
+  --bg: #05070f;
+  --bg-subtle: #080b16;
+  --panel: rgba(255, 255, 255, 0.04);
+  --panel-strong: rgba(255, 255, 255, 0.08);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --fg: #e9edf7;
+  --fg-dim: #a3adc6;
+  --fg-faint: #6f7a96;
+  --accent: #6c8cff;
+  --accent-soft: #9db4ff;
+  --violet: #a97bff;
+  --cyan: #4fd6e0;
+  --mint: #56e0a4;
+  --amber: #ffbe4d;
+  --rose: #ff6b8a;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+[data-theme="light"] {
+  --bg: #f6f7fb;
+  --bg-subtle: #eaedf6;
+  --panel: rgba(255, 255, 255, 0.9);
+  --panel-strong: #ffffff;
+  --line: rgba(10, 18, 40, 0.12);
+  --line-strong: rgba(10, 18, 40, 0.24);
+  --fg: #101629;
+  --fg-dim: #46506b;
+  --fg-faint: #6b7590;
+  --accent: #3d68f5;
+  --accent-soft: #254bd6;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border-color: var(--line);
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  overscroll-behavior-y: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ms-offline-shell {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 12px 16px 32px;
+}
+
+/* Header */
+.ms-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 16px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+
+.ms-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ms-logo {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(108, 140, 255, 0.3), rgba(169, 123, 255, 0.2));
+  border: 1px solid var(--line-strong);
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--accent-soft);
+}
+
+.ms-title-group h1 {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ms-badge-offline {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(86, 224, 164, 0.15);
+  color: var(--mint);
+  border: 1px solid rgba(86, 224, 164, 0.35);
+}
+
+.ms-tagline {
+  font-size: 11px;
+  color: var(--fg-dim);
+}
+
+.ms-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* Tabs Navigation */
+.ms-tabs-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+  scrollbar-width: none;
+}
+.ms-tabs-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.ms-tab-btn {
+  white-space: nowrap;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--fg-dim);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ms-tab-btn.active {
+  background: rgba(108, 140, 255, 0.18);
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+/* Tab Panels */
+.ms-tab-panel {
+  display: none;
+}
+.ms-tab-panel.active {
+  display: block;
+}
+
+/* Operation selector row */
+.ms-op-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ms-chip-btn {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--fg-dim);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 550;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ms-chip-btn.active {
+  background: var(--accent);
+  color: #05070f;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+/* Cards & Containers */
+.ms-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+
+.ms-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.ms-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ms-presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.ms-preset-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--accent-soft);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.ms-preset-btn:hover {
+  background: var(--panel-strong);
+  color: var(--fg);
+}
+
+/* Matrix Grid Input */
+.ms-matrix-wrap {
+  display: inline-block;
+  position: relative;
+  margin: 8px 0;
+  padding: 4px 8px;
+}
+
+.ms-matrix-bracket-left,
+.ms-matrix-bracket-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  border: 2px solid var(--line-strong);
+}
+.ms-matrix-bracket-left {
+  left: 0;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+.ms-matrix-bracket-right {
+  right: 0;
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+}
+
+.ms-matrix-grid {
+  display: grid;
+  gap: 6px;
+  overflow-x: auto;
+  max-width: 100%;
+  padding: 2px;
+}
+
+.ms-cell-input {
+  width: 58px;
+  min-height: 44px;
+  text-align: center;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 15px;
+}
+
+.ms-cell-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(108, 140, 255, 0.25);
+}
+
+/* Dimensions counter */
+.ms-dims-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--fg-dim);
+}
+
+.ms-dim-btn {
+  background: var(--panel-strong);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+/* Action button */
+.btn-calc {
+  width: 100%;
+  min-height: 46px;
+  background: var(--accent);
+  color: #05070f;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  transition: opacity 0.15s;
+}
+.btn-calc:hover {
+  opacity: 0.95;
+}
+.btn-calc:active {
+  transform: scale(0.99);
+}
+
+/* Results Section */
+.ms-results-area {
+  margin-top: 20px;
+}
+
+.ms-answer-banner {
+  background: linear-gradient(135deg, rgba(108, 140, 255, 0.15), rgba(79, 214, 224, 0.1));
+  border: 1px solid rgba(108, 140, 255, 0.35);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.ms-answer-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent-soft);
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.ms-answer-value {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--fg);
+  overflow-x: auto;
+}
+
+/* Verification Pills */
+.ms-checks-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ms-check-pill {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(86, 224, 164, 0.12);
+  color: var(--mint);
+  border: 1px solid rgba(86, 224, 164, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Step-by-step accordion / card */
+.ms-step-card {
+  background: var(--bg-subtle);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+.ms-step-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ms-step-number {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--accent);
+  font-family: var(--font-mono);
+}
+
+.ms-step-title {
+  font-size: 13px;
+  font-weight: 650;
+  color: var(--fg);
+}
+
+.ms-step-body {
+  font-size: 13px;
+  color: var(--fg-dim);
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+.ms-math-display {
+  margin: 8px 0;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+/* Scientific Calculator Keypad */
+.ms-sci-display {
+  width: 100%;
+  min-height: 52px;
+  background: var(--bg);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: var(--fg);
+  text-align: right;
+  margin-bottom: 12px;
+}
+
+.ms-sci-keypad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+
+.ms-key-btn {
+  min-height: 46px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  color: var(--fg);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.ms-key-btn.op {
+  color: var(--accent-soft);
+  background: var(--panel-strong);
+}
+
+.ms-key-btn.fn {
+  color: var(--cyan);
+  font-size: 13px;
+}
+
+.ms-key-btn.eq {
+  background: var(--accent);
+  color: #05070f;
+  font-weight: 700;
+}
+
+/* Offline notice footer */
+.ms-footer-note {
+  margin-top: 28px;
+  padding: 12px 16px;
+  background: var(--panel);
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  font-size: 11px;
+  color: var(--fg-faint);
+  line-height: 1.5;
+  text-align: center;
+}

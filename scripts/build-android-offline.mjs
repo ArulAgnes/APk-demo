@@ -1,0 +1,293 @@
+import fs from "node:fs";
+import path from "node:path";
+import esbuild from "esbuild";
+
+const root = process.cwd();
+const outDir = path.join(root, "android-web");
+const katexDist = path.join(root, "node_modules", "katex", "dist");
+
+console.log("Building MathSphere AI Android Offline Application...");
+
+// 1. Ensure target directories
+fs.mkdirSync(outDir, { recursive: true });
+fs.mkdirSync(path.join(outDir, "katex", "fonts"), { recursive: true });
+
+// 2. Copy KaTeX CSS & fonts
+if (fs.existsSync(katexDist)) {
+  fs.copyFileSync(
+    path.join(katexDist, "katex.min.css"),
+    path.join(outDir, "katex", "katex.min.css")
+  );
+  const fontFiles = fs.readdirSync(path.join(katexDist, "fonts"));
+  for (const file of fontFiles) {
+    fs.copyFileSync(
+      path.join(katexDist, "fonts", file),
+      path.join(outDir, "katex", "fonts", file)
+    );
+  }
+  console.log(`✓ Copied KaTeX assets (${fontFiles.length} fonts)`);
+}
+
+// 3. Copy Styles
+fs.copyFileSync(
+  path.join(root, "src", "offline", "styles.css"),
+  path.join(outDir, "style.css")
+);
+console.log("✓ Copied style.css");
+
+// 4. Bundle TypeScript with esbuild
+await esbuild.build({
+  entryPoints: [path.join(root, "src", "offline", "main.ts")],
+  bundle: true,
+  minify: true,
+  format: "iife",
+  target: ["es2020", "chrome90"],
+  outfile: path.join(outDir, "bundle.js"),
+});
+const bundleStat = fs.statSync(path.join(outDir, "bundle.js"));
+console.log(`✓ Bundled TypeScript solvers (${Math.round(bundleStat.size / 1024)} KB)`);
+
+// 5. Generate index.html
+const indexHtml = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#05070f" />
+  <title>MathSphere AI — Offline Computational Lab</title>
+  <link rel="stylesheet" href="katex/katex.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ms-offline-shell">
+    <!-- Header -->
+    <header class="ms-header">
+      <div class="ms-brand">
+        <div class="ms-logo">M</div>
+        <div class="ms-title-group">
+          <h1>MathSphere AI <span class="ms-badge-offline">Offline Lab</span></h1>
+          <p class="ms-tagline">Deterministic Matrix, SVD, Eigen, PCA & Number Theory Engines</p>
+        </div>
+      </div>
+      <div class="ms-actions-bar">
+        <button id="theme-toggle" class="btn-icon" aria-label="Toggle Theme">☀</button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="ms-tabs-nav">
+      <button class="ms-tab-btn active" data-tab="matrix">▦ Matrix Studio</button>
+      <button class="ms-tab-btn" data-tab="rref">⇅ Row Reduction</button>
+      <button class="ms-tab-btn" data-tab="eigen">λ Eigen & Spectral</button>
+      <button class="ms-tab-btn" data-tab="svd">Σ SVD & Factorizations</button>
+      <button class="ms-tab-btn" data-tab="pca">◉ PCA & Stats</button>
+      <button class="ms-tab-btn" data-tab="nt">∑ Number Theory</button>
+    </nav>
+
+    <!-- 1. Matrix Studio Panel -->
+    <section id="tab-matrix" class="ms-tab-panel active">
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <span class="ms-card-title">Matrix Operation</span>
+        </div>
+        <div class="ms-op-selector">
+          <button class="ms-chip-btn matrix-op-btn active" data-op="multiply">Multiply (A × B)</button>
+          <button class="ms-chip-btn matrix-op-btn" data-op="add">Add (A + B)</button>
+          <button class="ms-chip-btn matrix-op-btn" data-op="subtract">Subtract (A − B)</button>
+          <button class="ms-chip-btn matrix-op-btn" data-op="determinant">Determinant (det A)</button>
+          <button class="ms-chip-btn matrix-op-btn" data-op="inverse">Inverse (A⁻¹)</button>
+          <button class="ms-chip-btn matrix-op-btn" data-op="transpose">Transpose (Aᵀ)</button>
+          <button class="ms-chip-btn matrix-op-btn" data-op="rank">Rank & Subspaces</button>
+          <button class="ms-chip-btn matrix-op-btn" data-op="trace">Trace (tr A)</button>
+        </div>
+
+        <div class="ms-presets-row">
+          <span style="font-size: 11px; color: var(--fg-faint); margin-right: 4px;">Presets:</span>
+          <button class="ms-preset-btn matrix-preset" data-preset="invertible">3×3 Invertible</button>
+          <button class="ms-preset-btn matrix-preset" data-preset="symmetric">3×3 Symmetric</button>
+          <button class="ms-preset-btn matrix-preset" data-preset="singular">3×3 Singular</button>
+          <button class="ms-preset-btn matrix-preset" data-preset="identity">3×3 Identity</button>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; font-weight: 600; color: var(--accent-soft);">Matrix A:</label>
+          <div class="ms-matrix-wrap">
+            <span class="ms-matrix-bracket-left"></span>
+            <div id="matrix-a-grid" class="ms-matrix-grid"></div>
+            <span class="ms-matrix-bracket-right"></span>
+          </div>
+        </div>
+
+        <div id="matrix-b-container" style="margin-top: 10px;">
+          <label style="font-size: 12px; font-weight: 600; color: var(--violet);">Matrix B:</label>
+          <div class="ms-matrix-wrap">
+            <span class="ms-matrix-bracket-left"></span>
+            <div id="matrix-b-grid" class="ms-matrix-grid"></div>
+            <span class="ms-matrix-bracket-right"></span>
+          </div>
+        </div>
+
+        <button id="btn-calc-matrix" class="btn-calc">Compute Matrix Operation</button>
+      </div>
+      <div id="matrix-results"></div>
+    </section>
+
+    <!-- 2. Row Reduction & Systems Panel -->
+    <section id="tab-rref" class="ms-tab-panel">
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <span class="ms-card-title">Gaussian Elimination & Linear Systems</span>
+        </div>
+        <div class="ms-presets-row">
+          <span style="font-size: 11px; color: var(--fg-faint); margin-right: 4px;">Presets:</span>
+          <button class="ms-preset-btn rref-preset" data-preset="standard">3×3 System</button>
+          <button class="ms-preset-btn rref-preset" data-preset="dependent">Rank Deficient</button>
+          <button class="ms-preset-btn rref-preset" data-preset="augmented">Augmented [A | b]</button>
+        </div>
+
+        <div style="display: flex; gap: 16px; margin-bottom: 12px; font-size: 13px;">
+          <label><input type="radio" name="rref-mode" value="rref" checked /> Reduced Row Echelon Form (RREF)</label>
+          <label><input type="radio" name="rref-mode" value="ref" /> Row Echelon Form (REF)</label>
+        </div>
+
+        <div class="ms-matrix-wrap">
+          <span class="ms-matrix-bracket-left"></span>
+          <div id="rref-grid" class="ms-matrix-grid"></div>
+          <span class="ms-matrix-bracket-right"></span>
+        </div>
+
+        <button id="btn-calc-rref" class="btn-calc">Row Reduce Matrix</button>
+      </div>
+      <div id="rref-results"></div>
+    </section>
+
+    <!-- 3. Eigen & Spectral Panel -->
+    <section id="tab-eigen" class="ms-tab-panel">
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <span class="ms-card-title">Eigenvalues, Eigenvectors & Diagonalization</span>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: var(--fg-dim);">Operation:</label>
+          <select id="eigen-op-select" class="ms-cell-input" style="width: 100%; text-align: left; padding: 0 10px; margin-top: 4px;">
+            <option value="eigen.full">Full Eigenvalues & Eigenvectors</option>
+            <option value="diag.run">Diagonalization (A = P D P⁻¹)</option>
+            <option value="spectral.run">Symmetric Spectral Theorem (A = Q Λ Qᵀ)</option>
+            <option value="pd.test">Positive Definite Test (Sylvester's Criterion)</option>
+          </select>
+        </div>
+
+        <div class="ms-presets-row">
+          <span style="font-size: 11px; color: var(--fg-faint); margin-right: 4px;">Presets:</span>
+          <button class="ms-preset-btn eigen-preset" data-preset="distinct">2×2 Distinct</button>
+          <button class="ms-preset-btn eigen-preset" data-preset="symmetric">3×3 Symmetric</button>
+          <button class="ms-preset-btn eigen-preset" data-preset="rotation">Complex Eigenvalues</button>
+          <button class="ms-preset-btn eigen-preset" data-preset="pd">Positive Definite</button>
+        </div>
+
+        <div class="ms-matrix-wrap">
+          <span class="ms-matrix-bracket-left"></span>
+          <div id="eigen-grid" class="ms-matrix-grid"></div>
+          <span class="ms-matrix-bracket-right"></span>
+        </div>
+
+        <button id="btn-calc-eigen" class="btn-calc">Compute Spectral Decomposition</button>
+      </div>
+      <div id="eigen-results"></div>
+    </section>
+
+    <!-- 4. SVD & Factorizations Panel -->
+    <section id="tab-svd" class="ms-tab-panel">
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <span class="ms-card-title">Singular Value Decomposition (SVD)</span>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: var(--fg-dim);">Factorization:</label>
+          <select id="svd-op-select" class="ms-cell-input" style="width: 100%; text-align: left; padding: 0 10px; margin-top: 4px;">
+            <option value="svd.full">Full SVD (A = U Σ Vᵀ) — 14-Step Derivation</option>
+            <option value="svd.lowrank">Eckart–Young Low-Rank Truncation (Aₖ)</option>
+            <option value="pinv.run">Moore–Penrose Pseudoinverse (A⁺)</option>
+            <option value="qr.factor">QR Factorization (A = Q R)</option>
+          </select>
+        </div>
+
+        <div class="ms-presets-row">
+          <span style="font-size: 11px; color: var(--fg-faint); margin-right: 4px;">Presets:</span>
+          <button class="ms-preset-btn svd-preset" data-preset="classic">2×3 Rectangular</button>
+          <button class="ms-preset-btn svd-preset" data-preset="rank1">Rank-1 Truncation</button>
+          <button class="ms-preset-btn svd-preset" data-preset="square">2×2 Square</button>
+        </div>
+
+        <div class="ms-matrix-wrap">
+          <span class="ms-matrix-bracket-left"></span>
+          <div id="svd-grid" class="ms-matrix-grid"></div>
+          <span class="ms-matrix-bracket-right"></span>
+        </div>
+
+        <button id="btn-calc-svd" class="btn-calc">Derive SVD & Factorization</button>
+      </div>
+      <div id="svd-results"></div>
+    </section>
+
+    <!-- 5. PCA & Stats Panel -->
+    <section id="tab-pca" class="ms-tab-panel">
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <span class="ms-card-title">Principal Component Analysis (PCA)</span>
+        </div>
+        <p style="font-size: 12px; color: var(--fg-dim); margin-bottom: 10px;">
+          Data Matrix X (rows = observations, columns = variables):
+        </p>
+        <div class="ms-matrix-wrap">
+          <span class="ms-matrix-bracket-left"></span>
+          <div id="pca-grid" class="ms-matrix-grid"></div>
+          <span class="ms-matrix-bracket-right"></span>
+        </div>
+        <div style="margin-top: 10px; font-size: 12px;">
+          <label><input type="checkbox" id="pca-std-checkbox" /> Standardise variables (correlation-based PCA)</label>
+        </div>
+        <button id="btn-calc-pca" class="btn-calc">Run Principal Component Analysis</button>
+      </div>
+      <div id="pca-results"></div>
+    </section>
+
+    <!-- 6. Number Theory Panel -->
+    <section id="tab-nt" class="ms-tab-panel">
+      <div class="ms-card">
+        <div class="ms-card-header">
+          <span class="ms-card-title">Discrete Mathematics & Number Theory</span>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; color: var(--fg-dim);">Operation:</label>
+          <select id="nt-op-select" class="ms-cell-input" style="width: 100%; text-align: left; padding: 0 10px; margin-top: 4px;">
+            <option value="nt.gcd">Euclidean Algorithm (GCD & LCM)</option>
+            <option value="nt.extgcd">Extended Euclidean Algorithm (Bézout Identity: ax + by = g)</option>
+            <option value="nt.factorize">Prime Factorization & Divisor Functions</option>
+            <option value="nt.modular">Modular Exponentiation (aᵇ mod n)</option>
+          </select>
+        </div>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <input type="number" id="nt-input-a" class="ms-cell-input" style="flex: 1;" placeholder="a (e.g. 252)" value="252" />
+          <input type="number" id="nt-input-b" class="ms-cell-input" style="flex: 1;" placeholder="b (e.g. 105)" value="105" />
+          <input type="number" id="nt-input-n" class="ms-cell-input" style="flex: 1;" placeholder="n (modulus)" value="1000" />
+        </div>
+        <button id="btn-calc-nt" class="btn-calc">Execute Number Theory Calculation</button>
+      </div>
+      <div id="nt-results"></div>
+    </section>
+
+    <footer class="ms-footer-note">
+      MathSphere AI • Native Offline Application • Complete deterministic local computation with zero external dependencies.
+    </footer>
+  </div>
+
+  <script src="bundle.js"></script>
+</body>
+</html>`;
+
+fs.writeFileSync(path.join(outDir, "index.html"), indexHtml, "utf8");
+console.log("✓ Generated android-web/index.html");
+console.log("\n=================================================");
+console.log("Android Offline Web Application Built Successfully!");
+console.log("=================================================");

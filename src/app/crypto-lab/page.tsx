@@ -93,7 +93,7 @@ export default function CryptoLabPage() {
               <p className="text-xs text-amber">A fresh key is generated with the platform&apos;s cryptographically secure RNG on each render. It is never reused automatically.</p>
             </div>
             <div className="space-y-2">
-              <div className="rounded-xl border border-[var(--line)] p-3"><p className="mono-label">ASCII TABLE</p><div className="mt-2 max-h-32 overflow-y-auto font-mono text-[11px]">{asciiTable(text).map((a, i) => <p key={i}>'{a.ch}' → {a.dec} → 0x{a.hex} → {a.bin}</p>)}</div></div>
+              <div className="rounded-xl border border-[var(--line)] p-3"><p className="mono-label">ASCII TABLE</p><div className="mt-2 max-h-32 overflow-y-auto font-mono text-[11px]">{asciiTable(text).map((a, i) => <p key={i}>&apos;{a.ch}&apos; → {a.dec} → 0x{a.hex} → {a.bin}</p>)}</div></div>
               <div className="rounded-xl border border-[var(--line)] p-3 font-mono text-[11px] break-all"><p className="mono-label">M (bits)</p><p className="mt-1">{bits}</p></div>
               <div className="rounded-xl border border-[var(--line)] p-3 font-mono text-[11px] break-all"><p className="mono-label">K (bits)</p><p className="mt-1">{key.slice(0, 256)}</p></div>
               <div className="rounded-xl border border-[#56e0a4]/30 bg-[#56e0a4]/8 p-3 font-mono text-[11px] break-all"><p className="mono-label">C = M ⊕ K</p><p className="mt-1">{cipher.slice(0, 256)}</p><p className="mt-2 text-mint">Decrypted: {bits && key ? bitsToText(xorBits(cipher, key)) : "—"}</p></div>

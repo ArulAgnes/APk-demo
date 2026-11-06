@@ -10,7 +10,7 @@ interface RejectionDetail {
 }
 
 export function OfflineStatus() {
-  const [online, setOnline] = useState(true);
+  const [online, setOnline] = useState(() => typeof navigator !== "undefined" ? navigator.onLine : true);
   const [pending, setPending] = useState(0);
   const [syncing, setSyncing] = useState(false);
   const [notice, setNotice] = useState("");
@@ -50,9 +50,11 @@ export function OfflineStatus() {
 
   useEffect(() => {
     let active = true;
-    setOnline(navigator.onLine);
-    void refreshCount();
-    if (navigator.onLine) void sync();
+    queueMicrotask(() => {
+      if (!active) return;
+      void refreshCount();
+      if (typeof navigator !== "undefined" && navigator.onLine) void sync();
+    });
 
     const onOnline = () => {
       if (!active) return;

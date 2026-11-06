@@ -134,7 +134,7 @@ export default function GuidePage() {
       <div className="glass rounded-2xl p-4">
         <p className="mono-label">WHICH CALCULATOR DO YOU OWN?</p>
         <div className="mt-3 flex flex-wrap gap-2">{MODELS.map((x) => <button key={x.id} onClick={() => setModel(x.id)} className={`rounded-lg border px-3 py-2 text-left ${model === x.id ? "border-[#6c8cff]/60 bg-[#6c8cff]/12" : "border-[var(--line)]"}`}><p className="text-sm font-medium">{x.name}</p><p className="mt-0.5 text-[10px] text-dim max-w-[240px]">{x.note}</p></button>)}</div>
-        <p className="mt-3 text-xs text-amber">Selected: {m.name}. {m.note} Verify every menu label against that model's printed manual.</p>
+        <p className="mt-3 text-xs text-amber">Selected: {m.name}. {m.note} Verify every menu label against that model&apos;s printed manual.</p>
       </div>
 
       <div className="glass rounded-2xl p-4">
@@ -171,7 +171,7 @@ export default function GuidePage() {
           <p className="mono-label">SLIDE INDEX</p>
           <div className="mt-3 space-y-1.5">{t.slides.map((s, i) => <button key={i} onClick={() => setSlide(i)} className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs ${i === slide ? "bg-[#6c8cff]/15 text-[var(--fg)]" : "text-dim hover:bg-white/6"}`}><span className="font-mono text-[#9db4ff]">{String(i + 1).padStart(2, "0")}</span><span>{s.key}</span></button>)}</div>
           <div className="mt-5 border-t border-[var(--line)] pt-4 text-xs leading-relaxed text-dim">
-            <strong className="text-[var(--fg)]">Accuracy policy.</strong> The MathSphere team does not fabricate key sequences. These slides give the operation's logical stages and explicit warnings about model differences and unsupported functions. Always confirm labels in the official manual for your exact model.
+            <strong className="text-[var(--fg)]">Accuracy policy.</strong> The MathSphere team does not fabricate key sequences. These slides give the operation&apos;s logical stages and explicit warnings about model differences and unsupported functions. Always confirm labels in the official manual for your exact model.
           </div>
         </div>
       </div>

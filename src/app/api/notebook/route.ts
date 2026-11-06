@@ -117,7 +117,7 @@ export async function POST(req: Request) {
       const originalPayload = (body.originalPayload ?? finalPayload) as Payload;
       // Recompute on the server so what is stored is guaranteed to match the payload.
       const result = solve(operationId, finalPayload);
-      const r = await db
+      const r = await exec
         .insert(savedSolutions)
         .values({
           userId: user.id,

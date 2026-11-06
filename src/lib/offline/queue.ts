@@ -9,6 +9,7 @@ export interface QueuedWrite {
   createdAt: number;
   attempts: number;
   blocked?: boolean;
+  status?: "pending" | "blocked" | "rejected";
   lastError?: string;
 }
 
@@ -132,6 +133,7 @@ async function runFlush(): Promise<FlushResult> {
         body: JSON.stringify(entry.body),
       });
 
+      // Confirmed server synchronization or idempotent replay: safe to remove from local storage
       if (response.ok || response.status === 409) {
         if (entry.id !== undefined) await deleteWrite(entry.id);
         synced += 1;
@@ -143,14 +145,26 @@ async function runFlush(): Promise<FlushResult> {
         break;
       }
 
+      // Retryable transient server or network status codes: do not delete, retry later
+      if (response.status === 408 || response.status === 425 || response.status === 429 || response.status >= 500) {
+        throw new Error(`Server temporarily unavailable (HTTP ${response.status})`);
+      }
+
+      // Non-retryable client errors (400, 422, etc.): Preserve data, mark as rejected, never delete silently
       if (response.status >= 400 && response.status < 500) {
         const detail = await response.text().catch(() => "");
-        if (entry.id !== undefined) await deleteWrite(entry.id);
         rejected += 1;
+        const next: QueuedWrite = {
+          ...entry,
+          blocked: true,
+          status: "rejected",
+          lastError: detail.slice(0, 300) || `Server rejected with HTTP ${response.status}`,
+        };
+        if (entry.id !== undefined) await putWrite({ ...next, id: entry.id });
         dispatch("mathsphere:sync-rejected", {
           label: entry.label,
           status: response.status,
-          message: detail.slice(0, 300),
+          message: next.lastError,
         });
         continue;
       }
@@ -162,6 +176,7 @@ async function runFlush(): Promise<FlushResult> {
         ...entry,
         attempts,
         blocked: attempts >= 8,
+        status: attempts >= 8 ? "blocked" : "pending",
         lastError: error instanceof Error ? error.message : "Network error",
       };
       if (entry.id !== undefined) await putWrite({ ...next, id: entry.id });
@@ -177,10 +192,15 @@ async function runFlush(): Promise<FlushResult> {
 export async function retryBlockedWrites(): Promise<void> {
   const entries = await listWrites();
   for (const entry of entries) {
-    if (entry.id !== undefined && entry.blocked) {
-      await putWrite({ ...entry, blocked: false, attempts: 0, lastError: undefined });
+    if (entry.id !== undefined && (entry.blocked || entry.status === "rejected")) {
+      await putWrite({ ...entry, blocked: false, status: "pending", attempts: 0, lastError: undefined });
     }
   }
   dispatch("mathsphere:queue-change");
   await flushQueue();
+}
+
+export async function dismissWrite(id: number): Promise<void> {
+  await deleteWrite(id);
+  dispatch("mathsphere:queue-change");
 }

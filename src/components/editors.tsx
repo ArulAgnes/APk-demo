@@ -16,19 +16,24 @@ const num = (v: unknown, d = 0): number => {
 };
 
 function useMatrixState(initial: number[][], onCommit: (m: number[][]) => void) {
+  const initialKey = JSON.stringify(initial);
+  const [prevKey, setPrevKey] = useState(initialKey);
   const [rows, setRows] = useState(initial.length);
   const [cols, setCols] = useState(initial[0]?.length ?? 1);
   const [cells, setCells] = useState<string[][]>(initial.map((r) => r.map((x) => String(x))));
-  useEffect(() => {
+
+  if (prevKey !== initialKey) {
+    setPrevKey(initialKey);
     setRows(initial.length);
     setCols(initial[0]?.length ?? 1);
     setCells(initial.map((r) => r.map((x) => String(x))));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(initial)]);
+  }
+
+  const cellsKey = JSON.stringify(cells);
   useEffect(() => {
     onCommit(cells.map((r) => r.map((c) => (c.trim() === "" ? 0 : num(c)))));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(cells)]);
+  }, [cellsKey]);
   return { rows, cols, cells, setCells, setRows, setCols };
 }
 
@@ -129,10 +134,20 @@ export function MatrixEditor({
 /* Vector editor                                                       */
 /* ------------------------------------------------------------------ */
 export function VectorEditor({ label, dim, minDim = 1, maxDim = 8, value, onChange, math }: { label: string; dim: number; minDim?: number; maxDim?: number; value: number[]; onChange: (v: number[]) => void; math?: string }) {
+  const valueKey = JSON.stringify(value);
+  const [prevValueKey, setPrevValueKey] = useState(valueKey);
   const [cells, setCells] = useState<string[]>(value.map(String));
   const [n, setN] = useState(Math.max(dim, value.length));
-  useEffect(() => { setCells(value.map(String)); setN(value.length || dim); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [JSON.stringify(value)]);
-  useEffect(() => { onChange(cells.map((c) => num(c))); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [JSON.stringify(cells)]);
+
+  if (prevValueKey !== valueKey) {
+    setPrevValueKey(valueKey);
+    setCells(value.map(String));
+    setN(value.length || dim);
+  }
+
+  const cellsKey = JSON.stringify(cells);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { onChange(cells.map((c) => num(c))); }, [cellsKey]);
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-3 flex-wrap">
@@ -224,11 +239,21 @@ export function DatasetEditor({ label, rows, cols, minRows = 2, maxRows = 20, mi
 /* Probability / congruence editors                                    */
 /* ------------------------------------------------------------------ */
 export function ProbabilityEditor({ label, count, minCount = 2, maxCount = 10, value, onChange }: { label: string; count: number; minCount?: number; maxCount?: number; value: number[]; onChange: (v: number[]) => void }) {
+  const valueKey = JSON.stringify(value);
+  const [prevValueKey, setPrevValueKey] = useState(valueKey);
   const [cells, setCells] = useState<string[]>(value.map((v) => String(v)));
   const [n, setN] = useState(Math.max(count, value.length));
-  useEffect(() => { setCells(value.map(String)); setN(value.length || count); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [JSON.stringify(value)]);
+
+  if (prevValueKey !== valueKey) {
+    setPrevValueKey(valueKey);
+    setCells(value.map(String));
+    setN(value.length || count);
+  }
+
   const total = cells.slice(0, n).reduce((s, c) => s + num(c), 0);
-  useEffect(() => { onChange(cells.slice(0, n).map((c) => num(c))); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [JSON.stringify(cells), n]);
+  const cellsSliceKey = JSON.stringify(cells.slice(0, n));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { onChange(cells.slice(0, n).map((c) => num(c))); }, [cellsSliceKey]);
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">{label}</label>
@@ -249,10 +274,20 @@ export function ProbabilityEditor({ label, count, minCount = 2, maxCount = 10, v
 }
 
 export function CongruenceEditor({ label, count, minCount = 2, maxCount = 6, value, onChange }: { label: string; count: number; minCount?: number; maxCount?: number; value: { a: number; m: number }[]; onChange: (v: { a: number; m: number }[]) => void }) {
+  const valueKey = JSON.stringify(value);
+  const [prevValueKey, setPrevValueKey] = useState(valueKey);
   const [rows, setRows] = useState<{ a: string; m: string }[]>(value.length ? value.map((r) => ({ a: String(r.a), m: String(r.m) })) : [{ a: "2", m: "3" }, { a: "3", m: "5" }]);
   const [n, setN] = useState(Math.max(count, value.length));
-  useEffect(() => { setRows(value.length ? value.map((r) => ({ a: String(r.a), m: String(r.m) })) : rows); setN(Math.max(count, value.length)); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [JSON.stringify(value)]);
-  useEffect(() => { onChange(rows.slice(0, n).map((r) => ({ a: num(r.a), m: num(r.m, 1) }))); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [JSON.stringify(rows), n]);
+
+  if (prevValueKey !== valueKey) {
+    setPrevValueKey(valueKey);
+    if (value.length) setRows(value.map((r) => ({ a: String(r.a), m: String(r.m) })));
+    setN(Math.max(count, value.length));
+  }
+
+  const rowsSliceKey = JSON.stringify(rows.slice(0, n));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { onChange(rows.slice(0, n).map((r) => ({ a: num(r.a), m: num(r.m, 1) }))); }, [rowsSliceKey]);
   return (
     <div className="space-y-2">
       <label className="text-sm font-medium">{label}</label>
