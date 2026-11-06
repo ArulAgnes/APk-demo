@@ -18,7 +18,7 @@
 | Push | **Success**, exit code 0 |
 | Upstream tracking | `main` tracks `mathsphere/main` |
 | Remote `HEAD` | `refs/heads/main` |
-| Remote `main` SHA | `12ecd309b2e99fcb993d0602ec9ad03cfb9144e7` |
+| Remote `main` at feature publication | `12ecd309b2e99fcb993d0602ec9ad03cfb9144e7` |
 | Files in feature commit | 68 |
 | Insertions | 22,265 |
 | Repository visibility | Public |
@@ -37,8 +37,16 @@ Verification command:
 ```bash
 git ls-remote --symref mathsphere HEAD
 # ref: refs/heads/main    HEAD
-# 12ecd309b2e99fcb993d0602ec9ad03cfb9144e7    HEAD
 ```
+
+Documentation follow-up commits after the feature publication:
+
+```text
+7d8dc71  docs: add final publication report
+02c2ae8  docs: disclose dependency audit status
+```
+
+Later documentation commits may exist; run `git ls-remote mathsphere HEAD` for the current remote SHA.
 
 ---
 
