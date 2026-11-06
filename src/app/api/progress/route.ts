@@ -9,6 +9,16 @@ import type { Level } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+const LEVELS: Level[] = ["beginner", "intermediate", "advanced", "gate", "challenge"];
+
+function normalizeLevel(value: unknown): Level {
+  return LEVELS.includes(value as Level) ? (value as Level) : "intermediate";
+}
+
+function normalizeTime(value: unknown): number {
+  return Math.min(3_600_000, Math.max(0, Math.floor(Number(value) || 0)));
+}
+
 export async function GET(req: Request) {
   const user = await currentUser();
   const url = new URL(req.url);
@@ -98,11 +108,11 @@ export async function POST(req: Request) {
     }
     if (action === "attempt" && topicId) {
       const correct = Boolean(body.correct);
-      const level = (body.level as Level) ?? "intermediate";
+      const level = normalizeLevel(body.level);
       await db.insert(attempts).values({
         userId: user.id, unit, topicId, level,
         questionId: String(body.questionId ?? ""), mode: String(body.mode ?? "practice"),
-        correct, timeMs: Math.max(0, Math.min(Number(body.timeMs ?? 0) || 0, 3_600_000)),
+        correct, timeMs: normalizeTime(body.timeMs),
         givenAnswer: String(body.givenAnswer ?? "").slice(0, 500),
         expectedAnswer: String(body.expectedAnswer ?? "").slice(0, 500),
       });
@@ -120,11 +130,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
     if (action === "daily") {
+      if (!topicId) return NextResponse.json({ ok: false, error: "topicId is required" }, { status: 400 });
       const day = new Date().toISOString().slice(0, 10);
+      const timeMs = normalizeTime(body.timeMs);
       await db
         .insert(dailyResults)
-        .values({ userId: user.id, day, topicId, level: String(body.level ?? "intermediate"), correct: Boolean(body.correct), timeMs: Math.max(0, Number(body.timeMs ?? 0) || 0) })
-        .onConflictDoUpdate({ target: [dailyResults.userId, dailyResults.day], set: { correct: Boolean(body.correct), timeMs: Math.max(0, Number(body.timeMs ?? 0) || 0) } });
+        .values({ userId: user.id, day, topicId, level: normalizeLevel(body.level), correct: Boolean(body.correct), timeMs })
+        .onConflictDoUpdate({ target: [dailyResults.userId, dailyResults.day], set: { correct: Boolean(body.correct), timeMs } });
       return NextResponse.json({ ok: true });
     }
     return NextResponse.json({ ok: false, error: "Unknown action" }, { status: 400 });

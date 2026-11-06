@@ -8,6 +8,18 @@ import type { Level, Payload, SolveResult } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+const LEVEL_VALUES: Level[] = ["beginner", "intermediate", "advanced", "gate", "challenge"];
+
+function parseLevel(value: unknown): Level | null {
+  return typeof value === "string" && LEVEL_VALUES.includes(value as Level) ? (value as Level) : null;
+}
+
+function optionalPositiveInt(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const n = Number(value);
+  return Number.isInteger(n) && n >= 1 ? n : null;
+}
+
 /** GET /api/notebook — the signed-in user's books and saved solutions. */
 export async function GET(req: Request) {
   const user = await currentUser();
@@ -108,14 +120,14 @@ export async function POST(req: Request) {
         .insert(savedSolutions)
         .values({
           userId: user.id,
-          bookId: body.bookId === null || body.bookId === undefined ? null : Number(body.bookId),
+          bookId: optionalPositiveInt(body.bookId),
           section: String(body.section ?? "Unsorted").slice(0, 60) || "Unsorted",
           unit: String(body.unit ?? ""),
           topicId: String(body.topicId ?? ""),
           operationId,
           questionId: body.questionId ? String(body.questionId) : null,
-          questionNumber: body.questionNumber === undefined || body.questionNumber === null ? null : Number(body.questionNumber),
-          level: (body.level as Level) ?? null,
+          questionNumber: optionalPositiveInt(body.questionNumber),
+          level: parseLevel(body.level),
           source: body.source ? String(body.source) : null,
           prompt: String(body.prompt ?? "").slice(0, 4000),
           originalPayload,
@@ -187,7 +199,7 @@ export async function POST(req: Request) {
       const id = Number(body.id);
       const r = await db
         .update(savedSolutions)
-        .set({ bookId: body.bookId === null ? null : Number(body.bookId), section: String(body.section ?? "Unsorted").slice(0, 60), updatedAt: new Date() })
+        .set({ bookId: optionalPositiveInt(body.bookId), section: String(body.section ?? "Unsorted").slice(0, 60) || "Unsorted", updatedAt: new Date() })
         .where(and(eq(savedSolutions.id, id), eq(savedSolutions.userId, user.id)))
         .returning();
       if (!r.length) return NextResponse.json({ ok: false, error: "Not found (or not yours)" }, { status: 404 });
@@ -208,7 +220,7 @@ export async function POST(req: Request) {
       if (!bodyText.trim()) return NextResponse.json({ ok: false, error: "The note is empty" }, { status: 400 });
       const owns = await db.select({ id: savedSolutions.id }).from(savedSolutions).where(and(eq(savedSolutions.id, solutionId), eq(savedSolutions.userId, user.id))).limit(1);
       if (!owns.length) return NextResponse.json({ ok: false, error: "Not found (or not yours)" }, { status: 404 });
-      const r = await db.insert(solutionNotes).values({ userId: user.id, solutionId, body: bodyText, stepNumber: body.stepNumber === undefined ? null : Number(body.stepNumber) }).returning();
+      const r = await db.insert(solutionNotes).values({ userId: user.id, solutionId, body: bodyText, stepNumber: optionalPositiveInt(body.stepNumber) }).returning();
       return NextResponse.json({ ok: true, note: r[0] });
     }
 

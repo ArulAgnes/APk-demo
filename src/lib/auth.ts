@@ -75,9 +75,10 @@ export async function registerUser(username: string, password: string, displayNa
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.username, clean)).limit(1);
   if (existing.length) return { error: "That username is already taken." } as const;
   const { salt, hash } = hashPassword(password);
+  const cleanDisplayName = (displayName ?? username).trim().slice(0, 40) || clean;
   const inserted = await db
     .insert(users)
-    .values({ username: clean, displayName: (displayName ?? username).trim().slice(0, 40), passwordHash: hash, salt })
+    .values({ username: clean, displayName: cleanDisplayName, passwordHash: hash, salt })
     .returning({ id: users.id, username: users.username, displayName: users.displayName });
   return { user: inserted[0] } as const;
 }
