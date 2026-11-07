@@ -12,9 +12,9 @@ This report provides the technical audit, manifest verification, and package pro
 | **Package ID / Application ID** | `com.arulagnes.mathsphereai` | `android/app/build.gradle`, `capacitor.config.ts`, `AndroidManifest.xml` |
 | **Version Name** | `3.0.0` | `package.json`, `android/app/build.gradle` |
 | **Version Code** | `30000` | `android/app/build.gradle` |
-| **Minimum SDK** | `22` (Android 5.1 Lollipop) | `android/variables.gradle` (`minSdkVersion`) |
-| **Target / Compile SDK** | `34` (Android 14 Upside Down Cake) | `android/variables.gradle` (`compileSdkVersion`, `targetSdkVersion`) |
-| **Java / JVM Compatibility** | Java 17 Temurin | `.github/workflows/android-apk.yml`, `build.gradle` |
+| **Minimum SDK** | `24` (Android 7.0 Nougat) | `android/variables.gradle` (`minSdkVersion`) |
+| **Target / Compile SDK** | `36` (Android 16 / API 36) | `android/variables.gradle` (`compileSdkVersion`, `targetSdkVersion`) |
+| **Java / JVM Compatibility** | Java 21 Temurin | `.github/workflows/android-apk.yml`, `build.gradle` |
 | **Capacitor Core Version** | `8.0.1` | `package.json` |
 
 ---
